@@ -1,0 +1,309 @@
+package com.mygdx.game.component;
+
+import java.util.ArrayList;
+
+import com.mygdx.game.component.AICitizen.ItemCriteria;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.utility.Item;
+import com.mygdx.game.utility.ItemBank;
+
+public class InventoryExperimental<E> extends Component {
+	private boolean infiniteSize, infiniteQuantity, stackable;
+	private int size, maxNumItems, currNumItems;
+	private ArrayList<E> inventory;
+
+	/**
+	 * Creates an inventory Component.
+	 * @param owner The Entity owner of this Component.
+	 * @param name The name of this Component.
+	 * @param type The type of this Component.
+	 * @param active If this Component is active or not.
+	 * @param size The initial size (or final size) of the inventory.
+	 * @param expandable If this inventory is expandable or not.
+	 */
+	public InventoryExperimental(Entity owner, String name, int type, boolean active, int size, 
+			int maxNumItems) {
+		super(owner, name, type, active);
+		
+		this.size = size;
+		this.maxNumItems = maxNumItems;
+		this.inventory = new ArrayList<E>(this.size);
+	}
+	
+	/**
+	 * Creates an Inventory Component.
+	 * @param owner The Entity owner of this Component.
+	 * @param size The (initial and total) size of the Inventory. If infinite, this will simply be a initial size.
+	 * @param maxNumItems The maximum number of items that this inventory can hold. This is different from size as this is quantity whereas size is
+	 * the number of "slots" that can exist in the inventory.
+	 * @param infiniteSize If the Inventory is infinite in "slots". 
+	 * @param infiniteQuantity If the Inventory is infinite in Item quantity. 
+	 */
+	public InventoryExperimental(Entity owner, int size, int maxNumItems, boolean infiniteSize, boolean infiniteQuantity, boolean stackable) {
+		this(owner, "Inventory", 0, false, size, maxNumItems);
+		
+		this.infiniteSize = infiniteSize;
+		this.infiniteQuantity = infiniteQuantity;
+		this.stackable = stackable;
+	}
+	
+	/**
+	 * Creates an Inventory Component
+	 * @param owner The Entity owner of this Component.
+	 * @param maxNumItems The Maximum number of items. Only applies if "infiniteQuantity" is false.
+	 * @param infiniteSize If the Inventory is infinite in "slots".
+	 * @param infiniteQuantity If the Inventory is infinite in Item quantity.
+	 */
+	public InventoryExperimental(Entity owner, int maxNumItems, boolean infiniteSize, boolean infiniteQuantity, boolean stackable) {
+		this(owner, 0, maxNumItems, infiniteSize, infiniteQuantity, stackable);
+		
+	}
+	
+	public InventoryExperimental(Entity owner, boolean infiniteSize, boolean infiniteQuantity, boolean stackable) {
+		this(owner, 0, 0, infiniteSize, infiniteQuantity, stackable);
+		
+	}
+	
+	/**
+	 * Adds an item to the inventory. The Item is taken from an InventoryItem Object.
+	 * @param invItem The InventoryObject to get the Item from.
+	 */
+	public boolean addToInventory(InventoryItem invItem){
+		//First check if it already exists. Add it if so...
+		for(InventoryItem tempInvItem : inventory){
+			if(tempInvItem.item.name.equals(invItem.item.name)){
+				tempInvItem.quantity+=invItem.quantity;
+				return true;
+			}
+		}
+		
+		//If it didn't exist, add it as a new item.
+		if(this.hasOpenSlots() && this.hasSpace(invItem.quantity)){ 
+			this.inventory.add(invItem);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Adds an Item to the inventory.
+	 * @param item The Item to add.
+	 * @param quantity The quantity to add.
+	 */
+	public void addItemToInventory(Item item, int quantity){
+		//First check if it already exists.
+		for(InventoryItem invItem : inventory){
+			if(invItem.item.name.equals(item.name)){
+				invItem.quantity+=quantity;
+				return;
+			}
+		}
+		
+		this.inventory.add(new InventoryItem(item, quantity));
+	}
+	
+	/**
+	 * Adds an item to the inventory.
+	 * @param itemComponent A Component that holds an item to represented in the physical world.
+	 * @param quantity The quantity of the item to add.
+	 */
+	public void addItemToInventory(ItemComponent itemComponent, int quantity){
+		this.addItemToInventory(itemComponent.item, quantity);
+	}
+	
+	/**
+	 * Adds an item to the inventory. This adds an item from a Component to the inventory. Adds
+	 * 1 Item by default to the inventory.
+	 * @param ItemComponent The Component the item is being taken from.
+	 */
+	public void addItemToInventory(ItemComponent ItemComponent){
+		this.addItemToInventory(ItemComponent.item, 1);
+	}
+
+	
+	/**
+	 * Adds an Item to the inventory. 
+	 * @param name The Name of the item to add. This will be used to get the item from the ItemBank.
+	 * @param quantity The Quantity to add.
+	 */
+	public void addItemToInventory(String name, int quantity){
+		this.addItemToInventory(ItemBank.getItem(name), quantity);
+	}
+	
+	/**
+	 * Adds an Item to the inventory. 
+	 * @param name The Name of the item to add. This will be used to get the item from the ItemBank.
+	 */
+	public void addItemToInventory(String name){
+		this.addItemToInventory(name, 1);
+	}
+	
+	/**
+	 * Returns a new InventoryItem with the amount that was removed. If more than available is requested or all of an item is taken,
+	 * it is removed from the inventory.
+	 * @param itemID The ID of the item to remove.
+	 * @param quantity The quantity to remove.
+	 * @return A new InventoryItem with the quantity avaiable.
+	 */
+	public InventoryItem removeItemFromInventory(int itemID, int quantity){
+		//Find a matching ItemComponent.
+		for(int i=this.inventory.size()-1;i>=0;i--){
+			InventoryItem invItem = this.inventory.get(i);
+			if(this.inventory.get(i).item.itemID == itemID){
+				//If the ItemComponent in the inventory has more quantity than what we want, return full amount and subtract.
+				if(invItem.quantity > quantity){
+					invItem.quantity-=quantity;
+					return new InventoryItem(invItem.item, quantity);
+				}
+				//If the ItemComponent in the inventory didn't have enough (ItemComponent.quantity <= quantity)
+				this.inventory.remove(i);
+				return new InventoryItem(invItem.item, invItem.quantity);
+			}
+		}
+		
+		//If no ItemComponent was found, return null.
+		return null;
+	}
+	
+	/**
+	 * Removes an InventoryItem (and all quantity) from the inventory.
+	 * @param itemID The ID of the item.
+	 * @return The InventoryItem that was removed from the inventory, or null if it didn't exist.
+	 */
+	public InventoryItem removeItemFromInventory(int itemID){
+		//Find a matching ItemComponent.
+		for(int i=this.inventory.size()-1;i>=0;i--){
+			InventoryItem invItem = this.inventory.get(i);
+			if(this.inventory.get(i).item.itemID == itemID){
+				this.inventory.remove(i);
+				return new InventoryItem(invItem.item, invItem.quantity);
+			}
+		}
+		
+		//If no ItemComponent was found, return null.
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param criteria The SearchCriteria that must be satisfied for the Item to be picked.
+ 	 * @param quantity The quantity to remove.
+	 * @return The InventoryItem that was removed. Null if no matching Item was found.
+	 */
+	public InventoryItem removeFirstItemFromInventory(ItemCriteria criteria, int quantity){
+		for(int i=this.inventory.size()-1;i>=0;i--){
+			InventoryItem invItem = this.inventory.get(i);
+			
+			//The criteria must be satisfied.
+			if(criteria.withinCriteria(invItem)){
+				//If the ItemComponent in the inventory has more quantity than what we want, return full amount and subtract.
+				if(invItem.quantity > quantity){
+					invItem.quantity-=quantity;
+					return new InventoryItem(invItem.item, quantity);
+				}
+				//If the ItemComponent in the inventory didn't have enough (ItemComponent.quantity <= quantity)
+				this.inventory.remove(i);
+				return new InventoryItem(invItem.item, invItem.quantity);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Searches for an item in the inventory which satisfies the criteria.
+	 * @param criteria The ItemCriteria to satisfy.
+	 * @return The Item if it exists, null otherwise.
+	 */
+	public Item hasInventoryItem(ItemCriteria criteria){
+		for(InventoryItem invItem : this.inventory){
+			if(criteria.withinCriteria(invItem))
+				return invItem.item;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Checks if the inventory has an Item by an item ID.
+	 * @param itemID The Item ID to find.
+	 * @return The Item if it exists, null otherwise.
+	 */
+	public Item hasInventoryItem(int itemID){
+		for(InventoryItem invItem : this.inventory)
+			if(invItem.item.itemID == itemID)
+				return invItem.item;
+		
+		return null;
+	}
+	
+	/**
+	 * Checks if the inventory has an Item by an item ID with a minimum quantity.
+	 * @param itemID The Item ID to find.
+	 * @param quantity The quantity to check for.
+	 * @return True if an Item was found, false otherwise.
+	 */
+	public Item hasInventoryItemWithQuantity(int itemID, int quantity){
+		for(InventoryItem invItem : this.inventory)
+			if(invItem.item.itemID == itemID && invItem.quantity <= quantity)
+				return invItem.item;
+		
+		return null;
+	}
+	
+	public int getSize(){
+		return this.inventory.size();
+	}
+	
+	public int getNumItems(){
+		int num=0;
+		
+		for(InventoryItem invItem : this.inventory){
+			num += invItem.quantity;
+		}
+		
+		return num;
+	}
+	
+	/**
+	 * Checks if the current number of items exceeds the allowed number of items. Also takes into account "infiniteQuantity".
+	 * @return True if the quantity is infinite OR if the number of current items is small than the number of max items, false otherwise.
+	 */
+	public boolean hasSpace(){
+		return this.infiniteQuantity || this.currNumItems < this.maxNumItems;
+	}
+	
+	/**
+	 * Checks if the current number of items exceeds the allowed number of items. Also takes into account "infiniteQuantity".
+	 * @param amount The amount of Items that must be accounted for.
+	 * @return True if the quantity is infinite OR if the number of current items is small than the number of max items, false otherwise.
+	 */
+	public boolean hasSpace(int amount){
+		return this.infiniteQuantity || this.currNumItems + amount < this.maxNumItems;
+	}
+	
+	/**
+	 * Checks if the current size (# of slots) of the inventory is less than the allowed size. 
+	 * This also takes into account "infiniteSize"
+	 * @return True if the size is infinite OR the inventory size is less than the set size.
+	 */
+	public boolean hasOpenSlots(){
+		return this.infiniteSize || this.inventory.size() < this.size;
+	}
+	
+	public static class InventoryItem<E>{
+		public E item;
+		public int quantity;
+		
+		public InventoryItem(E item, int quantity){
+			this.item = item;
+			this.quantity = quantity;
+		}
+		
+		@Override
+		public String toString(){
+			return "[Item Name: "+item+" Quantity: " + quantity + "]";
+		}
+	}
+}

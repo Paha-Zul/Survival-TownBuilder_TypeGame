@@ -1,0 +1,11 @@
+package com.mygdx.game.interfaces;
+
+import com.mygdx.game.component.Component;
+
+public interface Condition {
+	
+	
+	public <T extends Component> boolean condition(T t, int val);
+	public <T extends Component> boolean condition(T t, int val, int val2);
+	
+}

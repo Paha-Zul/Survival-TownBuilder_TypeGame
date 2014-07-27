@@ -1,0 +1,175 @@
+package com.mygdx.game.component
+
+import com.mygdx.game.entity.Entity
+import scala.collection.mutable.ArrayBuffer
+
+class InventoryScala[E](owner : Entity, name : String, compType : Int, active : Boolean, 
+		val size : Int, val infiniteSize : Boolean, val infiniteQuantity : Boolean, val stackable : Boolean) 
+	extends Component(owner, name, compType, active) {
+	
+	var inventory : ArrayBuffer[InventoryItemScala[E]] = new ArrayBuffer[InventoryItemScala[E]](size);
+	
+	var maxNumItems : Int = 1000;
+	var currNumItems : Int = 0;
+	
+	
+	def addToInventory(itemToAdd : E, quantity : Int, criteria : (InventoryItemScala[E],InventoryItemScala[E]) => Boolean) : Boolean = {
+		val invItemToAdd = new InventoryItemScala(itemToAdd, quantity);
+		
+		//If the inventory can have stacking units, iterate over each item in the inventory and try to stack it
+		//if the criteria is satisfied.
+		if(stackable){
+			var i = 0;
+			
+			for(i <- 0 until inventory.length){ //Loop over the whole list...
+				val itemInInventory : InventoryItemScala[E] = inventory(i); //Cache the InventoryItem
+				
+				if(criteria(invItemToAdd, itemInInventory)){ //If the criteria is satisified...
+					itemInInventory.quantity += invItemToAdd.quantity; //Add the item.
+					return true;
+				}
+			}
+			
+			//If no acceptable item was found...
+			inventory :+ invItemToAdd;
+			return true;
+			
+		//If the inventory can't have stacking items...
+		}else{
+			inventory :+ invItemToAdd;
+			return true;
+		}
+	}
+	
+	/**
+	 * Removes the entire InventoryItemScala from the inventory and returns it.
+	 */
+	def removeItemFromInventory(func:(item) => Boolean) : InventoryItemScala[E] = {
+		for(e <- this.inventory ; e.item.itemID == itemID) return e;
+	}
+	
+	def removeItemFromInventory(itemToRemove : E, quantity : Int, 
+			criteria : (InventoryItemScala[E],InventoryItemScala[E]) => Boolean) : InventoryItemScala[E] = {
+		
+		val _InvItemToRemove = new InventoryItemScala[E](itemToRemove, quantity);
+		var itemToReturn : InventoryItemScala[E] = null; //Init the variable to hold our return.
+		
+		var i=0;
+		//Check over each inventory item 
+		for(invItem : InventoryItemScala[E] <- this.inventory){
+			//If the criteria is satisfied...
+			if(criteria(_InvItemToRemove, invItem)){
+				//If the invItem has more quantity than we want...
+				if(invItem.quantity > quantity){
+					itemToReturn = new InventoryItemScala[E](invItem.item , quantity); //Make new invItem
+					invItem.quantity -= quantity; //Subtract quantity
+					return itemToReturn; //Return new item.
+				 //If it doesn't have enough or exactly enough...
+				}else{
+					itemToReturn = new InventoryItemScala[E](invItem.item, invItem.quantity); //Make new invItem
+					inventory.remove(i) //Remove the item from the list.
+					return itemToReturn; //Return item.
+				}
+			}
+			
+			i+=1;
+		}
+		
+		return itemToReturn;
+	}
+	
+	def removeItemFromInventory(quantity : Int, 
+			criteria : InventoryItemScala[E] => Boolean) : InventoryItemScala[E] = {
+		
+		var itemToReturn : InventoryItemScala[E] = null; //Init the variable to hold our return.
+		
+		var i=0;
+		//Check over each inventory item 
+		for(invItem : InventoryItemScala[E] <- this.inventory){
+			//If the criteria is satisfied...
+			if(criteria(invItem)){
+				//If the invItem has more quantity than we want...
+				if(invItem.quantity > quantity){
+					itemToReturn = new InventoryItemScala[E](invItem.item , quantity); //Make new invItem
+					invItem.quantity -= quantity; //Subtract quantity
+					return itemToReturn; //Return new item.
+				 //If it doesn't have enough or exactly enough...
+				}else{
+					itemToReturn = new InventoryItemScala[E](invItem.item, invItem.quantity); //Make new invItem
+					inventory.remove(i) //Remove the item from the list.
+					return itemToReturn; //Return item.
+				}
+			}
+			i+=1;
+		}
+		return itemToReturn;
+	}
+	
+	def hasItemInInventory(itemToFind : E, criteria : (InventoryItemScala[E],InventoryItemScala[E]) => Boolean) : InventoryItemScala[E] = {
+		val _invItemToFind = new InventoryItemScala[E](itemToFind, 1);
+		
+		for(invItem : InventoryItemScala[E] <- this.inventory)
+			if(criteria(_invItemToFind, invItem))
+				return invItem;
+		
+		return null;
+	}
+	
+	/**
+	 * Takes in a criteria for an item in this inventory to satisfy.
+	 * Returns the True if there was an item that satisfied this criteria, false otheriwse.
+	 */
+	def hasItemInInventory(criteria : (InventoryItemScala[E]) => Boolean) : InventoryItemScala[E] = {
+		for(invItem : InventoryItemScala[E] <- this.inventory)
+			if(criteria(invItem))
+				return invItem;
+		
+		return null;
+	}
+	
+	def getSize() : Int = {
+		return this.inventory.length;
+	}
+	
+	def getNumItems() : Int = {
+		var num : Int =0;
+		
+		for(item : InventoryItemScala[E] <- this.inventory){
+			num += item.quantity;
+		}
+		
+		return num;
+	}
+	
+	/**
+	 * Checks if the current number of items exceeds the allowed number of items. Also takes into account "infiniteQuantity".
+	 * @return True if the quantity is infinite OR if the number of current items is small than the number of max items, false otherwise.
+	 */
+	def hasSpace() : Boolean = {
+		return this.infiniteQuantity || this.currNumItems < this.maxNumItems;
+	}
+	
+	/**
+	 * Checks if the current number of items exceeds the allowed number of items. Also takes into account "infiniteQuantity".
+	 * @param amount The amount of Items that must be accounted for.
+	 * @return True if the quantity is infinite OR if the number of current items is small than the number of max items, false otherwise.
+	 */
+	def hasSpace(amount : Int) : Boolean = {
+		return this.infiniteQuantity || this.currNumItems + amount < this.maxNumItems;
+	}
+	
+	/**
+	 * Checks if the current size (# of slots) of the inventory is less than the allowed size. 
+	 * This also takes into account "infiniteSize"
+	 * @return True if the size is infinite OR the inventory size is less than the set size.
+	 */
+	def hasOpenSlots() : Boolean = {
+		return this.infiniteSize || this.inventory.length < this.size;
+	}
+	
+}
+
+class InventoryItemScala[E](val item  : E, var quantity : Int){
+	
+	override def toString () : String = {"[Name: "+item.toString()+" Quantity: "+quantity+"]";}
+}

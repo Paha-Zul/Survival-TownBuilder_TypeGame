@@ -1,0 +1,9 @@
+package com.mygdx.game.component.character
+
+import com.mygdx.game.entity.Entity
+
+class AICharacterCompScala(owner : Entity, name : String, charType : Int, active : Boolean)
+	extends CharacterComp(owner, name, charType, active) {
+	
+	
+}

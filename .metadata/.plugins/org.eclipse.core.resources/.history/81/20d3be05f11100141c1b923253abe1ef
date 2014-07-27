@@ -1,0 +1,64 @@
+package com.mygdx.game.screens
+
+import scala.actors.Actor
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
+import scala.util.Random
+import com.mygdx.game.entity.Tree
+import com.badlogic.gdx.graphics.Texture
+import com.mygdx.game.component.Town
+import com.mygdx.game.entity.Entity
+import com.badlogic.gdx.Gdx
+import com.mygdx.game.entity.TownHall
+import com.mygdx.game.component.buildings.Building
+import com.mygdx.game.component.Inventory
+import com.mygdx.game.utility.Constants
+import com.mygdx.game.entity.AICharacter
+import com.mygdx.game.component.AICitizen
+
+object LoadWorld {
+	def load(treeText : Texture, hallText : Texture, stockText : Texture, AIText : Texture) = {
+		new LoadWorldActor(treeText, hallText, stockText, AIText).start();
+	}
+}
+
+class LoadWorldActor(treeText : Texture, hallText : Texture, stockText : Texture, AIText : Texture) extends Actor{
+	
+	def act() = {
+		var i=0;
+		
+		for(i <- 0 to 1000){
+			val randX : Float = (Random.nextDouble() * 800).toFloat;
+			val randY : Float = (Random.nextDouble() * 400).toFloat;
+			//new Tree("Tree", new Vector2(randX, randY), 0, treeText);
+		}
+		
+		// Create the town hall
+		//val town : Entity = new TownHall(new Vector2(200, 200), 0f, hallText);
+
+		// Cache the Town script for now.
+		val townScript : Town = town.getComponent(classOf[Town]);
+		townScript.setMaxPopulation(10); // Set the max population.
+
+		//val stockpile : Entity = new Entity("Stockpile", new Vector2(300, 100), 0f,
+				stockText);
+		
+		//stockpile.addComponent(new Building(stockpile, "Stockpile", 0, false, Constants.BUILDING_STOCKPILE));
+		stockpile.addComponent(new Inventory(stockpile, 0, 200, true, true));
+		townScript.addBuilding(stockpile.getComponent(classOf[Building]));
+
+		i=0;
+		
+		// Create some citizens.
+		for (i <- 0 to 1000) {
+			val randX : Float = (Random.nextDouble() * 500 + 100).toFloat;
+			val randY : Float = (Random.nextDouble() * 500 + 100).toFloat;
+
+			//val AI : Entity = new AICharacter("AICharacter",
+					//new Vector2(randX, randY), 0f, AIText);
+
+			// Add the AI to the town.
+			townScript.addToPopulation(AI.getComponent(classOf[AICitizen]));
+		}
+	}
+}

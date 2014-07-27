@@ -1,0 +1,26 @@
+package com.mygdx.game.utility;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.mygdx.game.entity.Entity;
+
+public class ListHolder {
+	private static ArrayList<ArrayList<Entity>> = new ArrayList<ArrayList<Entity>>(10);
+	private static HashMap<Integer, ArrayList<Entity>> entityMap = new HashMap<Integer, ArrayList<Entity>>();
+	private static ArrayList<Entity> activeEntityList = new ArrayList<Entity>();
+	//private static ArrayList<Entity> prefabList = new ArrayList<Entity>();
+	
+	public static void addToList(Entity entity){
+		activeEntityList.add(entity);
+	}
+	
+	public static void addEntityToList(Entity entity, int level){
+		entityMap.get
+	}
+	
+	public static ArrayList<Entity> getEntityList(int type){
+		if(type == 0) return activeEntityList;
+		return activeEntityList;
+	}
+}

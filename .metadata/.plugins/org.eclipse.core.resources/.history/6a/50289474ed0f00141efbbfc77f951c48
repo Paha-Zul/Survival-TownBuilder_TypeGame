@@ -1,0 +1,13 @@
+package com.mygdx.game.interfaces;
+
+import com.mygdx.game.component.AICitizen;
+import com.mygdx.game.entity.Entity;
+
+public interface Condition {
+	public boolean condition(Entity entity, int val);
+	public boolean condition(Entity entity, int val, int val2);
+	public boolean condition(T<? extends Component>, int val);
+	public boolean condition(AICitizen citizen, int val, int val2);
+	public boolean condition(Entity entity, int val);
+	
+}

@@ -1,0 +1,113 @@
+package com.mygdx.game.jobs;
+
+import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.component.AIMovement;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.jobgroups.JobGroup;
+
+public class MoveTo extends Job{
+	private Vector2 position;
+	private AIMovement movement;
+	private Entity entityToWatch;
+	
+	/**
+	 * Moves the Entity passed in to a location using the AIMovement component. The Entity must have a
+	 * AIMovement component or an error will be thrown.
+	 * @param name The name of this job.
+	 * @param type The type of this job.
+	 * @param group The group this job will belong to.
+	 * @param position The position to move to.
+	 * @param position The position to move to.
+	 * @param entityToWatch The Entity to watch. If this is null, the job will pay no attention to it.
+	 * If it is not null but is destroyed when the job is executing, the job group of this job will be canceled.
+	 */
+	public MoveTo(String name, int type, JobGroup group, Vector2 position) {
+		super(group, name, type);
+		
+		this.position = position;
+		//this.movement = this.owner.getComponent(AIMovement.class);
+	}
+	
+	/**
+	 * Moves the Entity passed in to a location using the AIMovement component. The Entity must have a
+	 * AIMovement component or an error will be thrown.
+	 * @param name The name of this job.
+	 * @param type The type of this job.
+	 * @param group The group this job will belong to.
+	 * @param position The position to move to.
+	 * @param position The position to move to.
+	 * @param entityToWatch The Entity to watch. If this is null, the job will pay no attention to it.
+	 * If it is not null but is destroyed when the job is executing, the job group of this job will be canceled.
+	 */
+	public MoveTo(String name, int type, JobGroup group, Vector2 position, Entity entityToWatch) {
+		this(name, type, group, position);
+		
+		this.entityToWatch = entityToWatch;
+	}
+	
+	/**
+	 * Simplified constructor for the MoveTo Job.
+	 * @param group The group that this job belongs to.
+	 * @param position The position to move to.
+	 * @param entityToWatch The Entity to watch. If this is null, the job will pay no attention to it.
+	 * If it is not null but is destroyed when the job is executing, the job group of this job will be canceled.
+	 */
+	public MoveTo(JobGroup group, Vector2 position, Entity entityToWatch){
+		this("MoveTo", 0, group, position, entityToWatch);
+	}
+	
+	/**
+	 * Simplified constructor for the MoveTo Job.
+	 * @param group The group that this job belongs to.
+	 * @param position The position to move to.
+	 */
+	public MoveTo(JobGroup group, Vector2 position){
+		this("MoveTo", 0, group, position, null);
+	}
+	
+	/**
+	 * Simplified constructor for the MoveTo Job.
+	 * @param group The group that this job belongs to.
+	 * @param position The position to move to.
+	 */
+	public MoveTo(JobGroup group, Entity entityToMoveTo){
+		this("MoveTo", 0, group, entityToMoveTo.transform.getWorldPosition(), null);
+	}
+
+	@Override
+	public void update(float delta) {
+		if(this.owner.isDestroyed()){
+			this.finished = true;
+			return;
+		}
+		
+		if(this.entityToWatch!=null && this.entityToWatch.isDestroyed()){
+			this.finished = true;
+			this.group.setFinished();
+			return;
+		}
+		
+		float xPos = this.owner.transform.getWorldPosition().x; //Cache the Entity's X
+		float yPos = this.owner.transform.getWorldPosition().y; //Cache the entity's Y
+		
+		double angle = Math.atan2(this.position.y - yPos, this.position.x - xPos); //Get the angle towards the position.
+		float amtX = (float) Math.cos(angle)*this.movement.maxSpeed*delta; //Movement in X direction.
+		float amtY = (float) Math.sin(angle)*this.movement.maxSpeed*delta; //Movement in Y direction.
+		
+		this.owner.transform.translate(amtX, amtY); //Translate with this X and Y.
+		
+		//Calculate the distance (Manhattan, cheap and fast).
+		float distance = Math.abs(xPos - position.x) + Math.abs(yPos - position.y);
+		if(distance < 1) //If the distance is less than some threshold, this job is done.
+			this.finished = true;
+	}
+	
+	@Override
+	public void destroy(){
+		super.destroy();
+		
+		this.movement = null;
+		this.position = null;
+	}
+
+}

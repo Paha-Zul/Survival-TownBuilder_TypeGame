@@ -1,0 +1,16 @@
+package com.mygdx.game.jobgroups;
+
+import com.mygdx.game.component.AIJobController;
+import com.mygdx.game.component.buildings.Residence;
+import com.mygdx.game.jobs.MoveTo;
+
+public class Sleep extends JobGroup {
+
+	public Sleep(AIJobController controller, String name, int type, Residence home) {
+		super(controller, name, type);
+		
+		this.addJob(new MoveTo(this, home.getEntityOwner()));
+		this.addJob(new SleepJob());
+	}
+
+}

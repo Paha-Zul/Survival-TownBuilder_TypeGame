@@ -1,0 +1,24 @@
+package com.mygdx.game.component;
+
+import com.mygdx.game.component.buildings.ResidenceScala;
+import com.mygdx.game.entity.Entity;
+
+public class Character extends Component {
+	ResidenceScala home;
+	AICitizen AI;
+
+	public Character(Entity owner, String name, int type, boolean active) {
+		super(owner, name, type, active);
+		
+	}
+	
+	@Override
+	public void update(float delta){
+		
+	}
+	
+	public void addAI(AICitizen AI){
+		this.AI = AI;
+	}
+
+}

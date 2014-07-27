@@ -1,0 +1,23 @@
+package com.mygdx.game.component.character
+
+import com.mygdx.game.entity.Entity
+
+class AICharacterCompScala(owner : Entity, name : String, charType : Int, active : Boolean)
+	extends CharacterComp(owner, name, charType, active) {
+	
+	var jobController : AIJobController;
+	var town : Town;
+	var inventory : InventoryScala;
+	var callback : AICharacterCompCallback;
+
+	var sleeping : Boolean = false;
+
+	var needs : CharacterNeeds;
+
+	// Timers
+	var jobDelay : Timer;
+	var eatTimer : Timer;
+	var sleepTimer : Timer;
+
+	Condition condition;
+}

@@ -1,0 +1,18 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.jobgroups.JobGroup;
+
+public class Sleep extends Job {
+
+	public Sleep(Entity owner, String name, int jobType, JobGroup group, CharacterNeeds needs) {
+		super(owner, name, jobType, group);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void update(float delta) {
+		
+	}
+
+}

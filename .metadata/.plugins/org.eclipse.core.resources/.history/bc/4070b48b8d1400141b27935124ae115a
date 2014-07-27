@@ -1,0 +1,9 @@
+package com.mygdx.game.jobgroups;
+
+public class Sleep {
+
+	public Sleep() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

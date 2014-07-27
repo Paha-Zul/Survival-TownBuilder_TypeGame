@@ -1,0 +1,23 @@
+package com.mygdx.game.utility;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.mygdx.game.entity.Entity;
+
+public class ListHolder {
+	public static int maxNumLevels = 20;
+	
+	private static ArrayList<ArrayList<Entity>> entityList = new ArrayList<ArrayList<Entity>>(10);
+	
+	public static void addEntityToList(Entity entity, int level){
+		if(level > maxNumLevels) throw new RuntimeException("'level' is greater than the maximum number of levels accepted.");
+		
+		entityList.get(level).add(entity);
+	}
+	
+	public static ArrayList<Entity> getEntityList(int type){
+		if(type == 0) return activeEntityList;
+		return activeEntityList;
+	}
+}

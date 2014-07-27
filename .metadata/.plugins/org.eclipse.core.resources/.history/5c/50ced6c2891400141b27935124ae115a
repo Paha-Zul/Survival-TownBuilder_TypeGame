@@ -1,0 +1,14 @@
+package com.mygdx.game.component;
+
+import com.mygdx.game.component.buildings.ResidenceScala;
+import com.mygdx.game.entity.Entity;
+
+public class Character extends Component {
+	ResidenceScala home;
+
+	public Character(Entity owner, String name, int type, boolean active) {
+		super(owner, name, type, active);
+		// TODO Auto-generated constructor stub
+	}
+
+}

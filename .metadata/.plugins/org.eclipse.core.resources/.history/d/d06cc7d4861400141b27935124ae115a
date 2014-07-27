@@ -1,0 +1,8 @@
+package com.mygdx.game.component.buildings
+
+import com.mygdx.game.entity.Entity
+
+class ResidenceScala(owner : Entity, name : String, buildType : Int, active : Boolean, space : Int) 
+	extends Building(owner, name, buildType, active) {
+
+}

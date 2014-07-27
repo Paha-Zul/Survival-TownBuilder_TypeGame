@@ -1,0 +1,44 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.interfaces.Destroyable;
+import com.mygdx.game.jobgroups.JobGroup;
+
+public abstract class Job implements Destroyable {
+	protected String name;
+	protected int jobType;
+	protected boolean finished = false, destroyed = false;
+	protected Entity owner;
+
+	JobGroup group;
+
+	public Job(Entity owner, String name, int jobType, JobGroup group) {
+		this.name = name;
+		this.jobType = jobType;
+		this.group = group;
+		this.owner = owner;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public abstract void update(float delta);
+
+	@Override
+	public void destroy() {
+		this.owner = null;
+		this.name = null;
+		this.destroyed = true;
+	}
+
+	@Override
+	public boolean isDestroyed() {
+		return this.destroyed;
+	}
+	
+	public JobGroup getJobGroup(){
+		return this.group;
+	}
+
+}

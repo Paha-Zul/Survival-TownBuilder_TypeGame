@@ -1,0 +1,90 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.component.Inventory;
+import com.mygdx.game.component.Inventory.InventoryItem;
+import com.mygdx.game.component.InventoryScala;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.jobgroups.JobGroup;
+import com.mygdx.game.utility.Events;
+import com.mygdx.game.utility.Item;
+import com.mygdx.game.utility.events.EventClasses;
+import com.mygdx.game.utility.events.EventInterfaces;
+
+public class TransferItem extends Job {
+	private boolean transferAll = false;
+	Inventory fromInv, toInv;
+	Item item;
+	int quantity;
+
+	/**
+	 * Transfers an InventoryItem (with Item and quantity) of the Entity owner of this job to another inventory.
+	 * @param name The name of the job.
+	 * @param jobType The type of the job.
+	 * @param group The JobGroup that owns this job.
+	 * @param toInv The Inventory to transfer the Item to.
+	 * @param item The Item that should be transfered.
+	 * @param quantity
+	 */
+	public TransferItem(JobGroup group, String name, int jobType, InventoryScala<?> fromInv,
+			Inventory toInv, Item item, int quantity, boolean transferAll) {
+		super(group, name, jobType);
+		
+		this.transferAll = transferAll;
+		
+		//Cache the inventory.
+		this.fromInv = fromInv;
+		this.toInv = toInv;
+		this.item = item;
+		this.quantity = quantity;
+		
+	}
+	
+	/**
+	 * Simplified constructor. Transfers an InventoryItem (with Item and quantity) 
+	 * of the Entity owner of this job to another inventory.
+	 * @param group The JobGroup that this Job belongs to.
+	 * @param toInv The Inventory to give the Item to.
+	 * @param item The Item to transfer.
+	 * @param quantity The quantity to transfer.
+	 */
+	public TransferItem(JobGroup group, Inventory fromInv, Inventory toInv, Item item, int quantity){
+		this(group, "GenericTransfer", 0, fromInv, toInv, item, quantity, false);
+	}
+	
+	/**
+	 * Simplified constructor. Transfers an InventoryItem (with Item and quantity) 
+	 * of the Entity owner of this job to another inventory.
+	 * @param group The JobGroup that this Job belongs to.
+	 * @param toInv The Inventory to give the Item to.
+	 * @param item The Item to transfer.
+	 */
+	public TransferItem(JobGroup group, Inventory fromInv, Inventory toInv, Item item, boolean transferAll){
+		this(group, "GenericTransfer", 0, fromInv, toInv, item, 0, transferAll);
+		
+		this.transferAll = transferAll;
+	}
+
+	@Override
+	public void update(float delta) {
+		//Get (attempt to get?) the Item.
+		InventoryItem invItem=null;
+		
+		if(this.transferAll) invItem = this.fromInv.removeItemFromInventory(this.item.itemID);
+		else invItem = this.fromInv.removeItemFromInventory(this.item.itemID, this.quantity);
+		
+		//If the InventoryItem is null (meaning it didn't exist in the Inventory), set this job to finished and return.
+		if(invItem == null){
+			this.finished = true;
+			return;
+		}
+		
+		//Call the event...
+		Events.notify(new EventClasses.TransferedItem(this.getJobGroup().getController().getEntityOwner(), invItem));
+		
+		//Get the item from the inventory and give it to the "toInv" inventory.
+		this.toInv.addItemToInventory(invItem);
+		this.finished = true;
+
+	}
+
+}

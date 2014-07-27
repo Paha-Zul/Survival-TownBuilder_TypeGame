@@ -1,0 +1,244 @@
+package com.mygdx.game.screens;
+
+import java.util.Iterator;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.SpaceGame;
+import com.mygdx.game.component.GridEntity;
+import com.mygdx.game.component.Inventory;
+import com.mygdx.game.component.Inventory.InventoryItem;
+import com.mygdx.game.component.ResourceNode;
+import com.mygdx.game.component.Town;
+import com.mygdx.game.component.buildings.Building;
+import com.mygdx.game.component.buildings.ResidenceScala;
+import com.mygdx.game.component.character.AICharacterComp;
+import com.mygdx.game.component.character.CharacterComp;
+import com.mygdx.game.entity.AICharacterEnt;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.entity.TownHall;
+import com.mygdx.game.entity.Tree;
+import com.mygdx.game.interfaces.SearchCriteria;
+import com.mygdx.game.jobgroups.JobGroup;
+import com.mygdx.game.utility.Constants;
+import com.mygdx.game.utility.Events;
+import com.mygdx.game.utility.Grid;
+import com.mygdx.game.utility.Item;
+import com.mygdx.game.utility.ItemBank;
+import com.mygdx.game.utility.ListHolder;
+import com.mygdx.game.utility.events.EventClasses;
+import com.mygdx.game.utility.events.EventInterfaces;
+
+public class GameScreen implements Screen {
+
+	SpaceGame game;
+	OrthographicCamera camera;
+	SpriteBatch batch;
+
+	public GameScreen(final SpaceGame game) {
+		this.game = game;
+		batch = game.batch;
+
+		// create the camera and the SpriteBatch
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+
+		new Grid(10, 10, 10, 100);
+		
+		ListHolder.initListHolder();
+
+		/*
+		 * Texture treeText = new Texture("img/Tree.png"); Texture hallText =
+		 * new Texture("img/Entity.png"); Texture stockText = new
+		 * Texture("img/StockPile.png"); Texture AIText = new
+		 * Texture("img/AI.png");
+		 * 
+		 * LoadWorld.load(treeText, hallText, stockText, AIText);
+		 */
+
+		this.loadResources();
+
+		this.loadTowns();
+
+		this.loadCitizens();
+		
+		this.initListeners();
+	}
+
+	@Override
+	public void render(float delta) {
+
+		Gdx.gl.glClearColor(1, 1, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		camera.update();
+		batch.begin();
+
+		for(int i=0;i<ListHolder.maxNumLevels;i++){
+			Iterator<Entity> iter = ListHolder.getEntityList(i).iterator();
+	
+			while (iter.hasNext()) {
+				Entity ent = iter.next();
+				if (ent.isDestroyed()) {
+					iter.remove();
+					continue;
+				}
+	
+				ent.update(delta); // Call normal update.
+				ent.render(batch);
+			}
+		}
+
+		/*
+		 * Old way for (Entity entity : ListHolder.getEntityList(0)) {
+		 * entity.update(delta); // Call normal update. entity.render(batch); }
+		 */
+
+		batch.end();
+	}
+
+	private void loadResources() {
+		Texture img = new Texture("img/Tree.png");
+
+		for (int i = 0; i < 5; i++) {
+			float randX = MathUtils.random() * 800;
+			float randY = MathUtils.random() * 400;
+			new Tree("Tree", new Vector2(randX, randY), 0, img, Constants.DRAWLEVEL_TREE);
+		}
+	}
+
+	private void loadTowns() {
+		// Create the town hall
+		Entity town = new TownHall(new Vector2(200, 200), 0f, new Texture(
+				Gdx.files.internal("img/Entity.png")), Constants.DRAWLEVEL_BUILDING);
+
+		// Cache the Town script for now.
+		Town townScript = town.getComponent(Town.class);
+		townScript.setMaxPopulation(10); // Set the max population.
+
+		Entity stockpile = new Entity("Stockpile", new Vector2(300, 100), 0f,
+				new Texture(Gdx.files.internal("img/StockPile.png")), Constants.DRAWLEVEL_BUILDING);
+
+		stockpile.addComponent(new Building(stockpile, "Stockpile", Constants.BUILDING_STOCKPILE, false));
+		
+		Inventory inv = new Inventory(stockpile, 0, 200, true, true);
+		inv.addItemToInventory(ItemBank.getItem("Apple"), 100);
+
+		stockpile.addComponent(inv);
+		townScript.addBuilding(stockpile.getComponent(Building.class));
+		
+		Entity house = new Entity("House", new Vector2(100,100), 0f,
+				new Texture(Gdx.files.internal("img/House.png")), Constants.DRAWLEVEL_BUILDING);
+		house.entityType = Constants.ENTITY_BUILDING;
+		house.entitySubType = Constants.BUILDING_RESIDENCE;
+		house.addComponent(new ResidenceScala(house, "House", Constants.BUILDING_RESIDENCE, false, 1));
+		house.addComponent(new GridEntity(house, Constants.GRID_STATIC));
+	}
+
+	private void loadCitizens() {
+		Texture img = new Texture("img/AI.png"); //Load the textures
+		SearchCriteria criteria = (e) -> e.name.equals(Constants.NAME_BUILDING_TOWNHALL); //Set up the critera
+		Town townScript = Grid.getClosestEntityByCriteria(100, new Vector2(0,0), criteria).getComponent(Town.class); //Find the town hall.
+		
+		// Create some citizens.
+		for (int i = 0; i < 1; i++) {
+			float randX = MathUtils.random() * 500 + 100;
+			float randY = MathUtils.random() * 500 + 100;
+
+			Entity AI = new AICharacterEnt("AICharacter",
+					new Vector2(randX, randY), 0f, img, Constants.DRAWLEVEL_CHARACTER);
+
+			// Add the AI to the town.
+			townScript.addToPopulation(AI.getComponent(AICharacterComp.class));
+			
+			SearchCriteria isResidence = (ent) -> {
+				if(ent.entityType == Constants.ENTITY_BUILDING && ent.entitySubType == Constants.BUILDING_RESIDENCE){
+					ResidenceScala buildingComp = ent.getComponent(ResidenceScala.class);
+					if(buildingComp.getBuildingType() == Constants.BUILDING_RESIDENCE)
+						return true;
+				}
+				
+				return false;
+			};
+			
+			CharacterComp charScript = AI.getComponent(AICharacterComp.class);
+			ResidenceScala residenceScript = (Grid.getClosestEntityByCriteria(100, charScript.getEntityOwner(), isResidence)).getComponent(ResidenceScala.class);
+			charScript.setHome(residenceScript);
+		}
+	}
+	
+	private void initListeners(){
+		Events.listen(EventClasses.TransferedItem.class, new EventInterfaces.TransferedItem() {
+			@Override
+			public void transferedItem(Entity entity, InventoryItem invItem) {
+				System.out.println("Entity " + entity.name + " transfered " + invItem);
+			}
+		});
+		
+		Events.listen(EventClasses.CollectedResource.class, new EventInterfaces.CollectedResource() {
+			@Override
+			public void collectedResource(Entity entity, ResourceNode resource) {
+				System.out.println("Entity " + entity.name + " collected resource " + resource.getResourceItem());
+			}
+		});
+		
+		Events.listen(EventClasses.ConsumedItem.class, new EventInterfaces.ConsumedItem() {
+			
+			@Override
+			public void consumedItem(Entity entity, Item item) {
+				System.out.println("Entity " + entity.name + " consumed " + item);
+			}
+		});
+		
+		Events.listen(EventClasses.ChangedJobGroup.class, new EventInterfaces.JobGroupChange() {
+			
+			@Override
+			public void changedJobGroup(JobGroup group) {
+				
+			}
+		});
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

@@ -1,0 +1,19 @@
+package com.mygdx.game.component.buildings
+
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.component.Component
+import java.lang.invoke.MethodHandleImpl.BindCaller.T
+import java.lang.invoke.MethodHandleImpl.BindCaller.T
+import java.lang.invoke.MethodHandleImpl.BindCaller.T
+import java.lang.invoke.MethodHandleImpl.BindCaller.T
+
+class ResidenceScala(owner : Entity, name : String, buildType : Int, active : Boolean, var space : Int) 
+	extends Building(owner, name, buildType, active) {
+
+	var residentList : InventoryScala[T <: Component] = new InventoryScala[T](owner, name, 0, false, 1, false, false, false);
+	
+	def addToResidence(char : Character) : Boolean = {
+		return residentList.addToInventory(char, 1, null);
+	}
+}

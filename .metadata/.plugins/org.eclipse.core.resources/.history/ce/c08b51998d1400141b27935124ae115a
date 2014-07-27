@@ -1,0 +1,12 @@
+package com.mygdx.game.jobgroups;
+
+import com.mygdx.game.component.AIJobController;
+
+public class Sleep extends JobGroup {
+
+	public Sleep(AIJobController controller, String name, int type, Residence home) {
+		super(controller, name, type);
+		
+	}
+
+}

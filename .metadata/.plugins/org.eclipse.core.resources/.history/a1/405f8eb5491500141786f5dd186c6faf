@@ -1,0 +1,33 @@
+package com.mygdx.game.component.character
+
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.component.Town
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.component.CharacterNeeds
+import com.mygdx.game.component.AIJobController
+import com.mygdx.game.interfaces.AICharacterCompCallback
+import com.mygdx.game.utility.Timer
+import com.mygdx.game.utility.Item
+
+class AICharacterCompScala(owner : Entity, name : String, charType : Int, active : Boolean)
+	extends CharacterComp(owner, name, charType, active) {
+	
+	var jobController : AIJobController = new AIJobController(owner, name, 0, active);
+	var town : Town = _;
+	var inventory : InventoryScala[Item] = new InventoryScala[Item](owner, "InventoryScala", 0, false, 0, true, true, true);
+	var callback : AICharacterCompCallback = (AI : AICharacterCompScala) => AI.sleeping = false;;
+
+	var sleeping : Boolean = false;
+
+	var needs : CharacterNeeds;
+
+	// Timers
+	var jobDelay : Timer;
+	var eatTimer : Timer;
+	var sleepTimer : Timer;
+
+	override def update(delta : Float) = {
+		
+	}
+
+}

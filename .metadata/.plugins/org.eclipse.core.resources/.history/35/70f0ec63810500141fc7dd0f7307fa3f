@@ -1,0 +1,25 @@
+package com.mygdx.game.component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.mygdx.game.entity.Entity;
+
+public class Town extends Component {
+	private String townName;
+	private int population;
+	
+	private HashMap<Class<? extends Building>, ArrayList<Component>> buildingMap; 
+
+	public Town(Entity owner, String name, int type, boolean active) {
+		super(owner, name, type, active);
+		
+		this.buildingMap = new HashMap<Class<? extends Component>, ArrayList<Component>>();
+	}
+	
+	public Town(Entity owner, String townName) {
+		this(owner, "GenericTown", 0, false);
+		
+	}
+
+}

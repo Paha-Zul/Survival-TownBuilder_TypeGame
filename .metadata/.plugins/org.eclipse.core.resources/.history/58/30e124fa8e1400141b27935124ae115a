@@ -1,0 +1,39 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.component.CharacterNeeds;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.jobgroups.JobGroup;
+import com.mygdx.game.utility.Timer;
+
+public class SleepJob extends Job {
+	int fatigueThreshold;
+	CharacterNeeds needs;
+	Timer tickTimer;
+
+	public SleepJob(Entity owner, String name, int jobType, JobGroup group, CharacterNeeds needs, int fatigueThreshold) {
+		super(owner, name, jobType, group);
+		
+		this.needs = needs;
+		this.fatigueThreshold = fatigueThreshold;
+		this.tickTimer = new Timer(2);
+	}
+	
+	public SleepJob(Entity owner, CharacterNeeds needs, int fatigueThreshold){
+		
+	}
+
+	@Override
+	public void update(float delta) {
+		//If we are below the 
+		if(needs.currFatigue <= fatigueThreshold){
+			this.finished = true;
+			return;
+		}
+		
+		if(this.tickTimer.done()){
+			needs.currFatigue--;
+			this.tickTimer.restart();
+		}
+	}
+
+}

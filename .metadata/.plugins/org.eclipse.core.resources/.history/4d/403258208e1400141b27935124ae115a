@@ -1,0 +1,21 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.component.CharacterNeeds;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.jobgroups.JobGroup;
+
+public class Sleep extends Job {
+	CharacterNeeds needs;
+
+	public Sleep(Entity owner, String name, int jobType, JobGroup group, CharacterNeeds needs, int sleepThreshold) {
+		super(owner, name, jobType, group);
+		
+		this.needs = needs;
+	}
+
+	@Override
+	public void update(float delta) {
+		if(needs.currTiredness < sleepThreshold)
+	}
+
+}

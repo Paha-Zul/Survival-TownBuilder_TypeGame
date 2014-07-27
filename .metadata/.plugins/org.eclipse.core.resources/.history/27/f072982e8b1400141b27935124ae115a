@@ -1,0 +1,39 @@
+package com.mygdx.game.entity;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.component.AICharacterComp;
+import com.mygdx.game.component.GridEntity;
+import com.mygdx.game.component.Health;
+import com.mygdx.game.component.Inventory;
+import com.mygdx.game.utility.Constants;
+
+public class AICharacterEnt extends Entity{
+
+	public AICharacterEnt(String name,Vector2 position, float rotation, Texture graphic, int drawLevel) {
+		super(name, position, rotation, graphic, drawLevel);
+
+		this.addComponent(new Inventory(this, 20, 1000, false, false)); //This has to go before "AICitizen"
+		this.addComponent(new Health(this, 100));
+		this.addComponent(new GridEntity(this, Constants.GRID_MOVING));
+		//this.addComponent(new AIJobController(this, "JobController", 0, true));
+		//this.addComponent(new AIMovement(this, "AIMover", 0, true, 50));
+		
+		this.addComponent(new AICharacterComp(this)); //This should go last since it depends on so much
+		
+		this.entityType = Constants.ENTITY_CHARACTER;
+	}
+	
+	@Override
+	public void update(float delta){
+		super.update(delta);
+		
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

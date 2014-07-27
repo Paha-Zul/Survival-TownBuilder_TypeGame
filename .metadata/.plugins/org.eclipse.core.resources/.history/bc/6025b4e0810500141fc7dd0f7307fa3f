@@ -1,0 +1,33 @@
+package com.mygdx.game.component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.mygdx.game.component.buildings.Building;
+import com.mygdx.game.entity.Entity;
+
+public class Town extends Component {
+	private String townName;
+	private int population;
+	
+	private HashMap<Class<? extends Building>, ArrayList<Class<? extends Building>>> buildingMap; 
+
+	public Town(Entity owner, String name, int type, boolean active) {
+		super(owner, name, type, active);
+		
+		this.buildingMap = new HashMap<Class<? extends Building>, ArrayList<Class<? extends Building>>>();
+	}
+	
+	public Town(Entity owner, String townName) {
+		this(owner, "GenericTown", 0, false);
+		
+	}
+	
+	public void addBuilding(Class<? extends Building> c){
+		//If this building type does not exist.
+		if(!this.buildingMap.containsKey(c)){
+			
+		}
+	}
+
+}
