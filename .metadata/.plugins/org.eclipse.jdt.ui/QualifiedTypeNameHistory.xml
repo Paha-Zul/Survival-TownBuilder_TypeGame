@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.mygdx.game.jobgroups.GatherResource"/>
-<fullyQualifiedTypeName name="scala.jobs.JobTest"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.Item"/>
 <fullyQualifiedTypeName name="scala.io.Source"/>
 <fullyQualifiedTypeName name="java.nio.file.Files"/>
@@ -38,10 +36,8 @@
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="scala.collection.mutable.ArrayBuffer"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.Component"/>
-<fullyQualifiedTypeName name="com.mygdx.game.jobs.MoveTo"/>
 <fullyQualifiedTypeName name="com.mygdx.game.jobs.SleepJob"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.CharacterNeeds"/>
-<fullyQualifiedTypeName name="com.mygdx.game.utility.Constants"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.AIJobController"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.GridEntity"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.AIMovement"/>
@@ -60,4 +56,8 @@
 <fullyQualifiedTypeName name="com.mygdx.game.utility.Timer"/>
 <fullyQualifiedTypeName name="com.mygdx.game.utility.Item"/>
 <fullyQualifiedTypeName name="com.mygdx.game.component.buildings.Residence"/>
+<fullyQualifiedTypeName name="com.mygdx.game.component.buildings.Building"/>
+<fullyQualifiedTypeName name="com.mygdx.game.utility.Constants"/>
+<fullyQualifiedTypeName name="com.mygdx.game.jobs.MoveTo"/>
+<fullyQualifiedTypeName name="com.mygdx.game.component.InventoryScala"/>
 </qualifiedTypeNameHistroy>

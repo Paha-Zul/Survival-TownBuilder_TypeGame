@@ -1,0 +1,14 @@
+package com.mygdx.game.jobs
+
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.jobgroups.JobGroup
+import com.mygdx.game.utility.Item
+
+class TransferItemScala[? : ClassManifest](group : JobGroup, name : String, jobType : Int, val fromInv : InventoryScala[?], 
+		val toInv : InventoryScala[?], val item : Item, quantity : Int, transferAll : Boolean) 
+		extends Job(group, name, jobType){
+	
+	override def update(delta : Float) = {
+		
+	}
+}

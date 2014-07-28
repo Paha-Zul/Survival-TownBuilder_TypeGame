@@ -1,0 +1,88 @@
+package com.mygdx.game.jobgroups
+
+import com.mygdx.game.component.AIJobController
+import com.mygdx.game.component.TownScala
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.utility.Constants
+import com.mygdx.game.component.ResourceNode
+import com.mygdx.game.component.Inventory
+import com.mygdx.game.utility.Grid
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.utility.Item
+import com.mygdx.game.utility.GridScala
+import com.badlogic.gdx.math.Vector2
+import java.util.ArrayList
+import com.mygdx.game.component.Component
+
+class GatherResourceScala(controller : AIJobController, name : String, groupType : Int, val resourceName : String, val town : TownScala) 
+	extends JobGroup(controller, name, groupType){
+	
+	val neededResource = (e : Entity) => {
+		if(e.entityType != Constants.ENTITY_RESOURCE) false; //First check if the entity is a resource.
+		val res = e.getComponent(classOf[ResourceNode]); //Cache the ResourceNode script.
+		(res.getResourceItem().name.equals(resourceName) && !res.isFull()); //Return if it's the right resource and has room.
+	}
+	
+	def Init() : Unit = {
+		//Find the closest Entity that fulfills the lambda expression above.
+		val closestRes = GridScala.getClosestEntityByCriteria(10, this.getController().getEntityOwner(), neededResource);
+		
+		//Create a lambda checking if the inventory of the entity is not full.
+		val notFull = (ent : Entity) => ((ent.getComponent(classOf[InventoryScala[Item]]))).hasSpace();
+		
+		//Get the closest stockpile that's not full.
+		val closestStockpile = this.findClosestAvailableComponent(town.getBuildingList(Constants.BUILDING_STOCKPILE), notFull);
+		
+		//If no tree OR stockpile was found, set finished to true and return.
+		if(closestRes == null || closestStockpile == null){
+			this.setFailed();
+			return;
+		}
+		
+		//Get the resource component from the resource
+		this.resource = closestRes.getComponent(ResourceNode.class);
+		
+		//If we can't add a collector, set to finished and return. Otherwise, we have been added as a collector.
+		//Think of this extra check as a way to make this thread safe.
+		if(!resource.addCollector()){
+			this.setFailed();
+			return;
+		}
+		
+		//Move to the resource
+		this.addJob(new MoveTo("MoveToClosest"+resourceName, 0, this, 
+				closestRes.transform.getWorldPosition(), resource.getEntityOwner()));
+		
+		//Collect the resource
+		this.addJob(new Gather(this, resource));
+		
+		//Move to the closest stockpile to deposit it.
+		this.addJob(new MoveTo("MovingToStockpile", 0, this, closestStockpile.transform.getWorldPosition()));
+		
+		//Transfer the item to the stockpile
+		this.addJob(new TransferItem(this, this.controller.getEntityOwner().getComponent(Inventory.class), 
+				closestStockpile.getComponent(Inventory.class), ItemBank.getItem(resource.getResourceItem().name), true));
+	}
+	
+	private def findClosestAvailableComponent[T <: Component : ClassManifest](list : ArrayList[T], criteria : (Entity) => Boolean) : Entity = {
+		val pos = this.controller.getEntityOwner().transform.getWorldPosition(); //Cache the position of the owner.
+		var closestDist : Float = 9999999999999f;
+		var closestEntity : Entity = null;
+		
+		for(comp <- list){
+			Entity ent = comp.getEntityOwner();
+			Vector2 otherPos = ent.transform.getWorldPosition(); //Cache the local ent's location
+			float distance = Math.abs(pos.x - otherPos.x) + Math.abs(pos.y - otherPos.y); //get the distance
+			
+			//First, a rough distance is checked. Then, we check if the node is full. If not, it is a potential 
+			//node to harvest.
+			if(distance < closestDist && criteria.withinCriteria(ent)){ 
+				closestDist = distance; //Set the distance
+				closestEntity = ent; //Set the closest entity
+				continue;
+			}
+		}
+		return closestEntity;
+	}
+
+}

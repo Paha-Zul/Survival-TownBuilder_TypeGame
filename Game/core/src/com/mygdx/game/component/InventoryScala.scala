@@ -4,18 +4,22 @@ import com.mygdx.game.entity.Entity
 import scala.collection.mutable.ArrayBuffer
 
 class InventoryScala[E](owner : Entity, name : String, compType : Int, active : Boolean, 
-		val size : Int, val infiniteSize : Boolean, val infiniteQuantity : Boolean, val stackable : Boolean) 
+		val size : Int, val maxNumItems : Int, val infiniteSize : Boolean, val infiniteQuantity : Boolean, val stackable : Boolean) 
 	extends Component(owner, name, compType, active) {
+	
+	/**
+	 * Stuff ya know?
+	 */
+	def this(owner : Entity, size : Int, maxNumItems : Int, infiniteSize : Boolean, infiniteQuantity : Boolean, stackable : Boolean){
+		this(owner, "Inventory for "+owner.name, 0, false, size, maxNumItems, infiniteSize, infiniteQuantity, stackable);
+	}
 	
 	var inventory : ArrayBuffer[InventoryItemScala[E]] = new ArrayBuffer[InventoryItemScala[E]](size);
 	
 	var maxNumItems : Int = 1000;
 	var currNumItems : Int = 0;
 	
-	
-	def addToInventory(itemToAdd : E, quantity : Int, criteria : (InventoryItemScala[E],InventoryItemScala[E]) => Boolean) : Boolean = {
-		val invItemToAdd = new InventoryItemScala(itemToAdd, quantity);
-		
+	def addToInventory(invItemToAdd : InventoryItemScala[E], criteria : (InventoryItemScala[E]) => Boolean) : Boolean = {
 		//If the inventory can have stacking units, iterate over each item in the inventory and try to stack it
 		//if the criteria is satisfied.
 		if(stackable){
@@ -24,7 +28,7 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 			for(i <- 0 until inventory.length){ //Loop over the whole list...
 				val itemInInventory : InventoryItemScala[E] = inventory(i); //Cache the InventoryItem
 				
-				if(criteria(invItemToAdd, itemInInventory)){ //If the criteria is satisified...
+				if(criteria(itemInInventory)){ //If the criteria is satisified...
 					itemInInventory.quantity += invItemToAdd.quantity; //Add the item.
 					return true;
 				}
@@ -41,13 +45,21 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 		}
 	}
 	
+	def addToInventory(itemToAdd : E, quantity : Int, criteria : (InventoryItemScala[E]) => Boolean) : Boolean = {
+		addToInventory(new InventoryItemScala(itemToAdd, quantity), criteria);
+	}
+	
 	/**
 	 * Removes the entire InventoryItemScala from the inventory and returns it.
 	 */
-	def removeItemFromInventory(func:(E) => Boolean) : InventoryItemScala[E] = {
-		for(e <- this.inventory ; func(e)) return e;
+	def removeItemFromInventory(func:(InventoryItemScala[E]) => Boolean) : InventoryItemScala[E] = {
+		for(invItem <- this.inventory ; if(func(invItem))) return invItem;
+		return null;
 	}
 	
+	/**
+	 * Removes an InventoryItemScala from the inventory at the desired quantity. Will return partial if not enough was available.
+	 */
 	def removeItemFromInventory(itemToRemove : E, quantity : Int, 
 			criteria : (InventoryItemScala[E],InventoryItemScala[E]) => Boolean) : InventoryItemScala[E] = {
 		

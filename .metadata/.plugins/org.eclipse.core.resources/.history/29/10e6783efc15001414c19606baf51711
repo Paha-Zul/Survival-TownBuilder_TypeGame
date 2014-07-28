@@ -1,0 +1,21 @@
+package com.mygdx.game.jobgroups
+
+import com.mygdx.game.component.CharacterNeeds
+import com.mygdx.game.component.AIJobController
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.jobs.SleepJob
+import com.mygdx.game.jobs.MoveTo
+
+class SleepScala(controller : AIJobController, name : String, groupType : Int, home : ResidenceScala, needs : CharacterNeeds,
+		threshold : Int, val callback : (Entity) => Unit) 
+		extends JobGroup(controller, name, groupType) {
+
+	this.addJob(new MoveTo(this, home.getEntityOwner()));
+	this.addJob(new SleepJob(this, needs, threshold));
+	
+	override def destroy() = {
+		
+	}
+		
+}

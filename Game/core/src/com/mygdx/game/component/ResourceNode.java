@@ -1,6 +1,5 @@
 package com.mygdx.game.component;
 
-import com.mygdx.game.component.Inventory.InventoryItem;
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.utility.Events;
 import com.mygdx.game.utility.Item;
@@ -88,10 +87,10 @@ public class ResourceNode extends Component {
 	 * @param amount The amount to be collected.
 	 * @return An InventoryItem with the Item and quantity that was collected.
 	 */
-	public InventoryItem collectResourceItem(Entity entity, int amount){
+	public InventoryItemScala<Item> collectResourceItem(Entity entity, int amount){
 		Events.notify(new EventClasses.CollectedResource(entity, this));
 		
-		return new InventoryItem(this.itemToGather, this.collectAmount(amount));
+		return new InventoryItemScala<Item>(this.itemToGather, this.collectAmount(amount));
 	}
 	
 	/**

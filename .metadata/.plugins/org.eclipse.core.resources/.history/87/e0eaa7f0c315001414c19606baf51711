@@ -1,0 +1,5 @@
+package com.mygdx.game.jobgroups
+
+class GatherResourceScala(controller : AIJobController, name : String, groupType : Int, resourceName : String, town : TownScala) extends JobGroup{
+
+}

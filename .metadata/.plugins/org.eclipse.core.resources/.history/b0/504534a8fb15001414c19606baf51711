@@ -1,0 +1,15 @@
+package com.mygdx.game.jobgroups
+
+class SleepScala extends JobGroup {
+
+	def Sleep(AIJobController controller, String name, int type,
+			ResidenceScala home, CharacterNeeds needs, int threshold,
+			AICharacterCompCallback callback) {
+		super(controller, name, type);
+
+		this.addJob(new MoveTo(this, home.getEntityOwner()));
+		this.addJob(new SleepJob(this, needs, threshold));
+		
+		this.callback = callback;
+	}
+}

@@ -1,6 +1,7 @@
 package com.mygdx.game.utility.events;
 
 import com.mygdx.game.component.Inventory.InventoryItem;
+import com.mygdx.game.component.InventoryItemScala;
 import com.mygdx.game.component.ResourceNode;
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.jobgroups.JobGroup;
@@ -10,9 +11,9 @@ public class EventClasses {
 
 	public static class TransferedItem implements EventInterfaces.GameEvent<EventInterfaces.TransferedItem>{
 		Entity entity;
-		InventoryItem invItem;
+		InventoryItemScala<Item> invItem;
 		
-		public TransferedItem(Entity entity, InventoryItem invItem){
+		public TransferedItem(Entity entity, InventoryItemScala<Item> invItem){
 			this.entity = entity;
 			this.invItem = invItem;
 		}

@@ -1,0 +1,5 @@
+package com.mygdx.game.jobs
+
+class TransferItemScala(group : JobGroup, name : String, jobType : Int, InventoryScala[?] fromInv extends Job{
+	
+}

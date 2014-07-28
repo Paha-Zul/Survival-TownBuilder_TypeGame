@@ -6,23 +6,23 @@ import com.mygdx.game.component.AIJobController;
 import com.mygdx.game.component.AIMovement;
 import com.mygdx.game.component.GridEntity;
 import com.mygdx.game.component.Health;
-import com.mygdx.game.component.Inventory;
-import com.mygdx.game.component.character.AICharacterComp;
-import com.mygdx.game.component.character.CharacterComp;
+import com.mygdx.game.component.InventoryScala;
+import com.mygdx.game.component.character.AICharacterCompScala;
 import com.mygdx.game.utility.Constants;
+import com.mygdx.game.utility.Item;
 
 public class AICharacterEnt extends Entity{
 
 	public AICharacterEnt(String name,Vector2 position, float rotation, Texture graphic, int drawLevel) {
 		super(name, position, rotation, graphic, drawLevel);
 
-		this.addComponent(new Inventory(this, 20, 1000, false, false)); //This has to go before "AICitizen"
+		this.addComponent(new InventoryScala<Item>(this, 20, 1000, false, false, true)); //This has to go before "AICitizen"
 		this.addComponent(new Health(this, 100));
 		this.addComponent(new GridEntity(this, Constants.GRID_MOVING));
 		this.addComponent(new AIJobController(this, "JobController", 0, true));
 		this.addComponent(new AIMovement(this, "AIMover", 0, true, 50));
 		
-		this.addComponent(new AICharacterComp(this)); //This should go last since it depends on so much
+		this.addComponent(new AICharacterCompScala(this)); //This should go last since it depends on so much
 		
 		this.entityType = Constants.ENTITY_CHARACTER;
 	}

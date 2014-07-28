@@ -28,6 +28,7 @@ import com.mygdx.game.jobgroups.JobGroup;
 import com.mygdx.game.utility.Constants;
 import com.mygdx.game.utility.Events;
 import com.mygdx.game.utility.Grid;
+import com.mygdx.game.utility.GridScala;
 import com.mygdx.game.utility.Item;
 import com.mygdx.game.utility.ItemBank;
 import com.mygdx.game.utility.ListHolder;
@@ -50,6 +51,7 @@ public class GameScreen implements Screen {
 				Gdx.graphics.getHeight());
 
 		new Grid(10, 10, 10, 100);
+		GridScala.initGrid(10, 10, 100, 100);
 		
 		ListHolder.initListHolder();
 

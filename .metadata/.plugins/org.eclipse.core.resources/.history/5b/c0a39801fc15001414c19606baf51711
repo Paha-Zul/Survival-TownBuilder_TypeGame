@@ -1,0 +1,13 @@
+package com.mygdx.game.jobgroups
+
+import com.mygdx.game.component.CharacterNeeds
+import com.mygdx.game.component.AIJobController
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.component.buildings.ResidenceScala
+
+class SleepScala(controller : AIJobController, name : String, groupType : Int, home : ResidenceScala, needs : CharacterNeeds,
+		threshold : Int, callback : (Entity) => Unit) 
+	extends JobGroup(controller, name, groupType) {
+
+	
+}

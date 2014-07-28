@@ -1,6 +1,6 @@
 package com.mygdx.game.utility.events;
 
-import com.mygdx.game.component.Inventory.InventoryItem;
+import com.mygdx.game.component.InventoryItemScala;
 import com.mygdx.game.component.ResourceNode;
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.jobgroups.JobGroup;
@@ -13,7 +13,7 @@ public class EventInterfaces {
 	}
 
 	public static interface TransferedItem {
-		public void transferedItem(Entity entity, InventoryItem invItem);
+		public void transferedItem(Entity entity, InventoryItemScala<Item> invItem);
 	}
 	
 	public static interface CollectedResource {

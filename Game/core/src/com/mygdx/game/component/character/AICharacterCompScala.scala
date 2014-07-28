@@ -1,32 +1,35 @@
 package com.mygdx.game.component.character
 
-import com.mygdx.game.entity.Entity
-import com.mygdx.game.component.Town
-import com.mygdx.game.component.InventoryScala
-import com.mygdx.game.component.CharacterNeeds
 import com.mygdx.game.component.AIJobController
-import com.mygdx.game.interfaces.AICharacterCompCallback
-import com.mygdx.game.utility.Timer
-import com.mygdx.game.utility.Item
-import com.mygdx.game.component.buildings.ResidenceScala
-import com.mygdx.game.jobgroups.Sleep
-import com.mygdx.game.interfaces.BuildingCriteria
-import com.mygdx.game.jobgroups.GatherResource
-import com.mygdx.game.component.buildings.ResidenceScala
-import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.component.CharacterNeeds
+import com.mygdx.game.component.InventoryItemScala
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.component.TownScala
 import com.mygdx.game.component.buildings.Building
 import com.mygdx.game.component.buildings.ResidenceScala
-import com.mygdx.game.utility.Constants
-import com.mygdx.game.component.InventoryItemScala
-import com.mygdx.game.component.character.AICharacterComp.ItemCriteria
+import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.entity.Entity
+import com.mygdx.game.jobgroups.GatherResource
 import com.mygdx.game.jobgroups.JobGroup
 import com.mygdx.game.jobgroups.RetrieveItem
+import com.mygdx.game.jobgroups.Sleep
+import com.mygdx.game.utility.Constants
+import com.mygdx.game.utility.Item
+import com.mygdx.game.utility.Timer
+import com.mygdx.game.jobgroups.GatherResourceScala
+import com.mygdx.game.jobgroups.SleepScala
 
 class AICharacterCompScala(owner : Entity, name : String, charType : Int, active : Boolean)
 	extends CharacterComp(owner, name, charType, active) {
 	
+	def this(owner : Entity) = {
+		this(owner, "GenericEntity", 0, true);
+	}
+	
 	var jobController : AIJobController = new AIJobController(owner, name, 0, active);
-	var town : Town = _;
+	var town : TownScala = _;
 	var inventory : InventoryScala[Item] = new InventoryScala[Item](owner, "InventoryScala", 0, false, 0, true, true, true);
 	val callback  = (AI : AICharacterCompScala) => AI.sleeping = false;
 
@@ -52,7 +55,7 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 				this.home = this.town.getBuildingByCriteria(Constants.BUILDING_RESIDENCE, criteria).asInstanceOf[ResidenceScala];
 			//Otherwise, sleep in my home.
 			}else{
-				this.jobController.addJobGroup(new Sleep(jobController, home, needs, 10, this.callback));
+				this.jobController.addJobGroup(new SleepScala(jobController, home, needs, 10, this.callback));
 				this.sleeping = true;
 			}
 		}
@@ -76,7 +79,7 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 		// If there are no jobs and the timer is done, find a new job.
 		if (jobController.hasNoJobs() && this.jobDelay.done()) {
 			if (this.jobDelay.done()) {
-				this.jobController.addJobGroup(new GatherResource(
+				this.jobController.addJobGroup(new GatherResourceScala(
 						this.jobController, "WoodLog", town));
 			}
 		}
@@ -124,6 +127,18 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 		} else {
 			itemToEat.item.consumeItem(this.getEntityOwner());
 		}
+	}
+	
+	def assignTownOwner(town : TownScala) = {
+		this.town = town;
+	}
+	
+	override def destroy() = {
+		this.jobController = null;
+		this.eatTimer = null;
+		this.jobDelay = null;
+		this.town = null;
+		this.inventory = null;
 	}
 	
 	/*

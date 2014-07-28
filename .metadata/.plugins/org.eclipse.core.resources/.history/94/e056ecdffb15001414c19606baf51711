@@ -1,0 +1,6 @@
+package com.mygdx.game.jobgroups
+
+class SleepScala(controller : AIJobController, name : String, groupType : Int) 
+	extends JobGroup(controller, name, groupType) {
+
+}

@@ -2,12 +2,8 @@ package com.mygdx.game.component;
 
 import java.util.LinkedList;
 
-import com.mygdx.game.component.Inventory.InventoryItem;
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.jobgroups.JobGroup;
-import com.mygdx.game.utility.Events;
-import com.mygdx.game.utility.ItemBank;
-import com.mygdx.game.utility.events.EventClasses;
 
 public class AIJobController extends Component{
 	private LinkedList<JobGroup> jobGroupList;

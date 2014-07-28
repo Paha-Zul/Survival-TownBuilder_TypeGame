@@ -1,0 +1,243 @@
+package com.mygdx.game.component
+
+import com.mygdx.game.entity.Entity
+import scala.collection.mutable.ArrayBuffer
+import com.mygdx.game.component.character.AICharacterCompScala
+import com.mygdx.game.utility.Timer
+
+class TownScala(owner : Entity, name : String, compType : Int, active : Boolean) 
+	extends Component(owner, name, compType, active){
+
+	private var maxPopulation : Int = 0;
+	private var citizenList : ArrayBuffer[AICharacterCompScala] = new ArrayBuffer(5);
+	
+	private val sortDemandsTimer : Timer = new Timer(10);
+	
+	private var buildingMap : HashMap = new Map();
+	
+	/*
+	 package com.mygdx.game.component;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
+import com.mygdx.game.component.buildings.Building;
+import com.mygdx.game.component.character.AICharacterComp;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.interfaces.BuildingCriteria;
+import com.mygdx.game.utility.Comparators.CompareDemand;
+import com.mygdx.game.utility.Item;
+import com.mygdx.game.utility.ItemBank;
+import com.mygdx.game.utility.Timer;
+
+public class Town extends Component {
+	private int maxPopulation;
+	private ArrayList<AICharacterComp> citizenList;
+	
+	private Timer sortDemandsTimer;
+	
+	private HashMap<Integer, ArrayList<Building>> buildingMap;  //Holds all the buildings that the Town owns.
+	private HashMap<String, Supply> supplyMap; //Supply map is for easy tracking of item supply/quantity
+	
+	private ArrayList<ItemStats> itemStatsList; //An ArrayList for the ItemStats which can be sorted. Default is by Demand.
+
+	public Town(Entity owner, String name, int type, boolean active) {
+		super(owner, name, type, active);
+		
+		this.citizenList = new ArrayList<AICharacterComp>();
+		this.supplyMap = new HashMap<String, Supply>(); //Initialize the supply map.
+		this.buildingMap = new HashMap<Integer, ArrayList<Building>>(); //Init the building map.
+		
+		this.itemStatsList = new ArrayList<ItemStats>(); //Init the ItemStats list.
+		
+		for(Item item : ItemBank.getItemsAsList()){
+			ItemStats stats = new ItemStats(item); //Create the ItemStats
+			this.itemStatsList.add(stats); //Add the item stats
+			//Link the supply in the item stats to the supplyMap
+			this.supplyMap.put(item.name, this.itemStatsList.get(this.itemStatsList.size()-1).supply); 
+		}
+		
+		this.sortDemandsTimer = new Timer(10f);
+	}
+	
+	public Town(Entity owner, String townName) {
+		this(owner, "GenericTown", 0, true);
+		
+	}
+	
+	@Override
+	public void update(float delta){
+		if(this.sortDemandsTimer.done()){
+			//First, update all demands.
+			for(ItemStats stats : this.itemStatsList)
+				stats.update(delta);
+			
+			//Sort the demands based on the demand.
+			Collections.sort(this.itemStatsList, new CompareDemand());
+			
+			this.sortDemandsTimer.restart(); //Restart the timer.
+		}
+	}
+	
+	/**
+	 * Sets the maximum population of the Town.
+	 * @param population The Maximum population this town can hold.
+	 */
+	public void setMaxPopulation(int population){
+		this.maxPopulation = population;
+	}
+	
+	/**
+	 * Gets the maximum population of this Town.
+	 * @return An integer which is the maximum population of the Town.
+	 */
+	public int getMaxPopulation(){
+		return this.maxPopulation;
+	}
+	
+	/**
+	 * Gets the current population of the Town.
+	 * @return An integer which is the current population of the Town.
+	 */
+	public int getCurrPopulation(){
+		return this.citizenList.size();
+	}
+	
+	/**
+	 * Adds a citizen to the town's population if there is room. This will also assign the citizen worker the Town object.
+	 * @param citizen The Citizen to make part of this town.
+	 * @return True if the citizen was able to be added, false otherwise.
+	 */
+	public boolean addToPopulation(AICharacterComp citizen){
+		if(this.citizenList.size() < this.maxPopulation){
+			citizen.assignTownOwner(this);
+			this.citizenList.add(citizen);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Removes a citizen from the population. This will also set the citizen's Town reference to null.
+	 * @param citizen The Citizen to remove from the town.
+	 */
+	public void removeFromPopulation(AICharacterComp citizen){
+		citizen.assignTownOwner(null);
+		this.citizenList.remove(citizen);
+	}
+	
+	/**
+	 * Adds a building to the building list of this Town.
+	 * @param buildingComponent The BuildingComponent to add. This represents the building entity.
+	 */
+	public void addBuilding(Building buildingComponent){
+		//If this building type does not exist.
+		if(!this.buildingMap.containsKey(buildingComponent.getBuildingType())){
+			ArrayList<Building> list = new ArrayList<Building>();
+			this.buildingMap.put(buildingComponent.getBuildingType(), list);
+		}
+		
+		this.buildingMap.get(buildingComponent.getBuildingType()).add(buildingComponent);
+	}
+	
+	/**
+	 * Gets a list of buildings of the requested type from the building list of the Town.
+	 * @param type An integer which is the type of building to retrieve.
+	 * @return An ArrayList of BuildingComponents which are the type requested. If the type was not found, an empty ArrayList is returned.
+	 */
+	public ArrayList<Building> getBuildingList(int type){
+		//If the key doesn't exist, return an empty list.
+		if(!this.buildingMap.containsKey(type)) return new ArrayList<Building>(0);
+		return this.buildingMap.get(type); //Otherwise, return the list found.
+	}
+	
+	
+	public Building getBuildingByCriteria(int type, BuildingCriteria criteria){
+		for(Building building : this.getBuildingList(type))
+			if(criteria.withinCriteria(building))
+				return building;
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Adds a worker to the supply map of the Town.
+	 * @param itemName The name of the Item which will be used to find the Item in the HashMap.
+	 */
+	public void addWorker(String itemName){
+		this.supplyMap.get(itemName).workers.amount++;
+	}
+	
+	/**
+	 * Removes a worker from the supply map of the Town.
+	 * @param itemName The name of the Item which will be used to find the Item in the HashMap.
+	 */
+	public void removeWorket(String itemName){
+		this.supplyMap.get(itemName).workers.amount--;
+	}
+	
+	/**
+	 * Adds an amount that was either consumed from the town's stock or was attempted to be consumed.
+	 * @param amount The amount consumed or attempted to be consumed.
+	 */
+	public void addAmountConsumed(int amount){
+		
+	}
+	
+	public static class ItemStats{
+		public Item item;
+		public Demand demand;
+		public Supply supply;
+		
+		public ItemStats(Item item){
+			this.item = item;
+			this.demand = new Demand(this);
+			this.supply = new Supply(this);
+		}
+		
+		public void update(float delta){
+			demand.update(delta);
+		}
+	}
+	
+	public static class Workers{
+		public int amount;
+		
+		public Workers(){
+			
+		}
+	}
+	
+	public static class Demand{
+		public int demand, consumed;
+		public ItemStats stats;
+		
+		public Demand(ItemStats stats){
+			this.stats = stats;
+		}
+		
+		public void update(float delta){
+			this.demand = consumed - this.stats.supply.workers.amount;
+		}
+		
+	}
+	
+	public static class Supply{
+		public ItemStats stats;
+		public int quantity;
+		public Workers workers;
+		
+		public Supply(ItemStats stats){
+			this.stats = stats;
+			this.workers = new Workers();
+		}
+		
+	}
+
+}
+	 
+	 */
+}

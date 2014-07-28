@@ -1,0 +1,5 @@
+package com.mygdx.game.jobgroups
+
+class GatherResourceScala extends JobGroup{
+
+}

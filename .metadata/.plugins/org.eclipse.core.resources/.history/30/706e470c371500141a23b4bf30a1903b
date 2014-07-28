@@ -1,5 +1,0 @@
-package com.mygdx.game.component.character
-
-class AICharacterCompScala extends CharacterComp {
-
-}
