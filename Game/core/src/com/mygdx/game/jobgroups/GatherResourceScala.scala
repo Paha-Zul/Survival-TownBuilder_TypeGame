@@ -9,13 +9,13 @@ import com.mygdx.game.component.InventoryScala
 import com.mygdx.game.component.ResourceNode
 import com.mygdx.game.component.TownScala
 import com.mygdx.game.entity.Entity
-import com.mygdx.game.jobs.Gather
 import com.mygdx.game.jobs.MoveTo
 import com.mygdx.game.jobs.TransferItemScala
 import com.mygdx.game.utility.Constants
 import com.mygdx.game.utility.GridScala
 import com.mygdx.game.utility.Item
 import com.mygdx.game.utility.ItemBank
+import com.mygdx.game.jobs.GatherScala
 
 class GatherResourceScala(controller : AIJobController, name : String, groupType : Int, val resourceName : String, val town : TownScala) 
 	extends JobGroup(controller, name, groupType){
@@ -63,7 +63,7 @@ class GatherResourceScala(controller : AIJobController, name : String, groupType
 				closestRes.transform.getWorldPosition(), resource.getEntityOwner()));
 		
 		//Collect the resource
-		this.addJob(new Gather(this, resource));
+		this.addJob(new GatherScala(this, resource));
 		
 		//Move to the closest stockpile to deposit it.
 		this.addJob(new MoveTo("MovingToStockpile", 0, this, closestStockpile.transform.getWorldPosition()));

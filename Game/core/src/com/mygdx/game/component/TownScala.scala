@@ -5,13 +5,16 @@ import scala.collection.mutable.ArrayBuffer
 import com.mygdx.game.component.character.AICharacterCompScala
 import com.mygdx.game.utility.Timer
 import com.mygdx.game.component.buildings.Building
-import com.mygdx.game.component.character.AICharacterComp
 import com.mygdx.game.component.character.AICharacterCompScala
 import scala.collection.mutable.HashMap
 import java.util.ArrayList
 
 class TownScala(owner : Entity, name : String, compType : Int, active : Boolean) 
 	extends Component(owner, name, compType, active){
+	
+	def this(owner : Entity, name : String) = {
+		this(owner, name, 0, false);
+	}
 
 	private var maxPopulation : Int = 0;
 	private var citizenList : ArrayBuffer[AICharacterCompScala] = new ArrayBuffer(5);

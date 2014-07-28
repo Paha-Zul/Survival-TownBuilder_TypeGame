@@ -14,10 +14,14 @@ object GridScala {
 	private var gridPadding : Int = _;
 	
 	def initGrid(width : Int, height : Int, padding : Int, sizeOfSquare : Int) = {
-		grid = Array.tabulate(3,3){ (x,y) => new GridSquareScala((x-padding)*squareSize,(y-padding)*squareSize, squareSize, squareSize) }
+		this.grid = Array.tabulate(3,3){ (x,y) => new GridSquareScala((x-padding)*squareSize,(y-padding)*squareSize, squareSize, squareSize) }
+		
+		this.squareSize  = sizeOfSquare;
+		this.gridPadding = padding;
 	}
 		
 	def addEntityToGrid(e : Entity) : GridSquareScala = {
+		println("Entity: "+e.transform.getWorldPosition()+" squareSize: "+squareSize+" padding: "+gridPadding);
 		val transform = e.transform; //Cache the transform
 		val xIndex = ((transform.getWorldPosition().x/squareSize) + gridPadding).toInt;
 		val yIndex = ((transform.getWorldPosition().y/squareSize) + gridPadding).toInt;

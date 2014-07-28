@@ -1,0 +1,5 @@
+package com.mygdx.game.screens
+
+class GameScreenScala extends Screen{
+
+}

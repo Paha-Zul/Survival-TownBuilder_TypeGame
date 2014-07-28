@@ -1,0 +1,68 @@
+package com.mygdx.game.jobs;
+
+import com.mygdx.game.component.InventoryScala;
+import com.mygdx.game.component.ResourceNode;
+import com.mygdx.game.jobgroups.JobGroup;
+import com.mygdx.game.utility.Item;
+import com.mygdx.game.utility.Timer;
+
+public class Gather extends Job{
+	private ResourceNode resource;
+	private Timer timer;
+	private InventoryScala<Item> ownerInventory;
+	
+	/**
+	 * 
+	 * @param group
+	 * @param name
+	 * @param type
+	 * @param resource
+	 */
+	public Gather(JobGroup group, String name, int type, ResourceNode resource) {
+		super(group, "CutTree", 0);
+		
+		this.resource = resource;
+		this.ownerInventory = this.group.getController().getEntityOwner().getComponent(InventoryScala.class);
+		
+		//Set a timer for how long it takes to collect the resource.
+		timer = new Timer(resource.getTimeToCollect()); //Set a timer to collect the resource based on the resource itself
+	}
+	
+	public Gather(JobGroup group, ResourceNode resource){
+		this(group, "CutTree", 0, resource);
+	}
+
+	@Override
+	public void update(float delta) {
+		timer.update(delta);
+		
+		//If the Entity we are trying to gather from is destroyed, cancel this job and job group.
+		if(this.resource.isDestroyed()){
+			this.finished = true; //Finish this job.
+			this.group.setFinished(); //If the gather fails, set the whole group to finished. Nothing to gather = done.
+			return;
+		}
+		
+		//If the timer is done, collect resource, set this job to finished, and subtract 1 from the number of collectors.
+		if(timer.done()){
+			//Collect the Item and add it to the owner's inventory.
+			InventoryItemScala itemCollected = this.resource.collectResourceItem(this.getJobGroup().getController().getEntityOwner(),
+					this.resource.getAmountPerTick());
+			
+			this.ownerInventory.addItemToInventory(itemCollected); //Add it...
+			
+			//Set to finished and remove this collector from the resource.
+			this.finished=true;
+			this.resource.removeCollector();
+		}
+	}
+	
+	@Override
+	public void destroy(){
+		super.destroy();
+		
+		this.resource = null;
+		this.timer = null;
+	}
+
+}

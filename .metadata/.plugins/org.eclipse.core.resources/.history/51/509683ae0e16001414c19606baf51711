@@ -1,0 +1,17 @@
+package com.mygdx.game.jobs
+
+import com.mygdx.game.jobgroups.JobGroup
+import com.mygdx.game.component.ResourceNode
+
+class GatherScala(group : JobGroup, name : String, groupType : Int, val resource : ResourceNode)
+	extends Job(group, name, groupType){
+	
+	def this(group : JobGroup, resource : ResourceNode){
+		this(group, "Gathering Resouce "+resource.getResourceItem().name, resource);
+	}
+	
+	override def update(lazy delta) = {
+		
+	}
+
+}

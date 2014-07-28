@@ -1,0 +1,21 @@
+package com.mygdx.game.jobs
+
+import com.mygdx.game.jobgroups.JobGroup
+import com.mygdx.game.component.ResourceNode
+import com.mygdx.game.component.InventoryScala
+import com.mygdx.game.utility.Item
+
+class GatherScala(group : JobGroup, name : String, groupType : Int, val resource : ResourceNode)
+	extends Job(group, name, groupType){
+	
+	def this(group : JobGroup, resource : ResourceNode){
+		this(group, "Gathering Resouce "+resource.getResourceItem().name, 0, resource);
+	}
+	
+	val ownerInventory : InventoryScala[Item] = this.group.getController().getEntityOwner().getComponent(classOf[InventoryScala[Item]]);
+	
+	override def update(delta : Float) = {
+		
+	}
+
+}

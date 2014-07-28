@@ -2,12 +2,12 @@ package com.mygdx.game.component;
 
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.utility.Constants;
-import com.mygdx.game.utility.Grid;
-import com.mygdx.game.utility.Grid.GridSquare;
+import com.mygdx.game.utility.GridScala;
+import com.mygdx.game.utility.GridScala.GridSquareScala;
 
 public class GridEntity extends Component {
 	private int gridType;
-	private GridSquare currSquare;
+	private GridSquareScala currSquare;
 
 	/**
 	 * A GridEntity component will add the Entity to the grid and maintain it.
@@ -21,7 +21,7 @@ public class GridEntity extends Component {
 		super(owner, name, type, active);
 		
 		this.gridType = gridType;
-		this.currSquare = Grid.addEntityToGrid(this.owner);
+		this.currSquare = GridScala.addEntityToGrid(this.owner);
 		
 		//TODO Figure out how to disable this if static entity.
 	}
@@ -39,12 +39,12 @@ public class GridEntity extends Component {
 	@Override
 	public void update(float delta){
 		if(this.gridType == Constants.GRID_MOVING)
-			this.currSquare = Grid.updateGridSquare(this.currSquare, this.owner);
+			this.currSquare = GridScala.updateGridSquare(this.currSquare, this.owner);
 	}
 	
 	@Override
 	public void destroy(){
-		Grid.removeEntityFromGrid(this.owner); //Remove this from the grid.
+		GridScala.removeEntityFromGrid(this.owner); //Remove this from the grid.
 		
 		super.destroy(); //This goes after because this will remove the owner Entity.
 	}

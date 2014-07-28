@@ -1,0 +1,6 @@
+package com.mygdx.game.jobs
+
+class GatherScala(group : JobGroup, name : String, groupType : Int, val resource : ResourceNode)
+	extends Job(group, name, groupType){
+
+}

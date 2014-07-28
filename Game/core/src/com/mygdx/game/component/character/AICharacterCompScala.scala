@@ -11,10 +11,8 @@ import com.mygdx.game.component.buildings.ResidenceScala
 import com.mygdx.game.component.buildings.ResidenceScala
 import com.mygdx.game.component.buildings.ResidenceScala
 import com.mygdx.game.entity.Entity
-import com.mygdx.game.jobgroups.GatherResource
 import com.mygdx.game.jobgroups.JobGroup
 import com.mygdx.game.jobgroups.RetrieveItem
-import com.mygdx.game.jobgroups.Sleep
 import com.mygdx.game.utility.Constants
 import com.mygdx.game.utility.Item
 import com.mygdx.game.utility.Timer
@@ -30,7 +28,7 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 	
 	var jobController : AIJobController = new AIJobController(owner, name, 0, active);
 	var town : TownScala = _;
-	var inventory : InventoryScala[Item] = new InventoryScala[Item](owner, "InventoryScala", 0, false, 0, true, true, true);
+	var inventory : InventoryScala[Item] = new InventoryScala[Item](owner, "InventoryScala", 0, false, 0, 99999, true, true, true);
 	val callback  = (AI : AICharacterCompScala) => AI.sleeping = false;
 
 	var sleeping : Boolean = false;

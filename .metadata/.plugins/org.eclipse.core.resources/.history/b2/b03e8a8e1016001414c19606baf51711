@@ -1,0 +1,7 @@
+package com.mygdx.game.screens
+
+import com.badlogic.gdx.Screen
+
+class GameScreenScala extends Screen{
+
+}

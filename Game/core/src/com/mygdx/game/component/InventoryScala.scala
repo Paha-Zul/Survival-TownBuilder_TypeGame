@@ -7,16 +7,12 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 		val size : Int, val maxNumItems : Int, val infiniteSize : Boolean, val infiniteQuantity : Boolean, val stackable : Boolean) 
 	extends Component(owner, name, compType, active) {
 	
-	/**
-	 * Stuff ya know?
-	 */
 	def this(owner : Entity, size : Int, maxNumItems : Int, infiniteSize : Boolean, infiniteQuantity : Boolean, stackable : Boolean){
 		this(owner, "Inventory for "+owner.name, 0, false, size, maxNumItems, infiniteSize, infiniteQuantity, stackable);
 	}
 	
 	var inventory : ArrayBuffer[InventoryItemScala[E]] = new ArrayBuffer[InventoryItemScala[E]](size);
 	
-	var maxNumItems : Int = 1000;
 	var currNumItems : Int = 0;
 	
 	def addToInventory(invItemToAdd : InventoryItemScala[E], criteria : (InventoryItemScala[E]) => Boolean) : Boolean = {
