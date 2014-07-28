@@ -14,14 +14,18 @@ object GridScala {
 	private var gridPadding : Int = _;
 	
 	def initGrid(width : Int, height : Int, padding : Int, sizeOfSquare : Int) = {
-		this.grid = Array.tabulate(3,3){ (x,y) => new GridSquareScala((x-padding)*squareSize,(y-padding)*squareSize, squareSize, squareSize) }
+		var w = width;
+		var h = height;
+		h+=padding*2;
+		w+=padding*2;
+		
+		this.grid = Array.tabulate(w, h){ (x,y) => new GridSquareScala((x-padding)*squareSize,(y-padding)*squareSize, squareSize, squareSize) }
 		
 		this.squareSize  = sizeOfSquare;
 		this.gridPadding = padding;
 	}
 		
 	def addEntityToGrid(e : Entity) : GridSquareScala = {
-		println("Entity: "+e.transform.getWorldPosition()+" squareSize: "+squareSize+" padding: "+gridPadding);
 		val transform = e.transform; //Cache the transform
 		val xIndex = ((transform.getWorldPosition().x/squareSize) + gridPadding).toInt;
 		val yIndex = ((transform.getWorldPosition().y/squareSize) + gridPadding).toInt;
@@ -108,7 +112,7 @@ def getClosestEntityByCriteria(radius : Int, position : Vector2, criteria:(Entit
 	var closestEntity : Entity = null;
 	
 	while(closestEntity == null && currRadius <= radius){
-		range = new SearchRange(currRadius, position);
+		val range : SearchRange = new SearchRange(currRadius, position);
 		
 		for(x <- range.startX to range.endX){ //For each X
 			for(y <- range.startY to range.endY){ //For each Y
@@ -129,12 +133,14 @@ def getClosestEntityByCriteria(radius : Int, position : Vector2, criteria:(Entit
 private def closestEntityFunc(criteria:(Entity) => Boolean, list : ArrayList[Entity], range : SearchRange) : Entity = {
 	var closestEntity : Entity = null;
 	var closestDist : Float = 9999999999999f;
-	
+	println("Found one1")
 	for(ent <- list){
 		if(criteria(ent)){
+			println("Found one2")
 			val otherPos = ent.transform.getWorldPosition(); //Cache the local ent's location
 			val distance = Math.abs(range.entPos.x - otherPos.x) + Math.abs(range.entPos.y - otherPos.y).toFloat; //get the distance
 			if(distance < closestDist){ //If the computed distance is less than the last closest
+				println("Found one3")
 				closestDist = distance; //Set the distance
 				closestEntity = ent; //Set the closest entity
 			}
@@ -163,7 +169,7 @@ private def closestEntityFunc(criteria:(Entity) => Boolean, list : ArrayList[Ent
 	class GridSquareScala(x : Int, y : Int, val width : Int, val height : Int) {
 		val position = new Vector2(x,y);
 		
-		private def entityList : ArrayBuffer[Entity] = new ArrayBuffer[Entity](5);
+		private val entityList : ArrayBuffer[Entity] = new ArrayBuffer[Entity](5);
 		
 		def addEntity(e : Entity) : GridSquareScala = {
 			entityList += e;
@@ -179,7 +185,7 @@ private def closestEntityFunc(criteria:(Entity) => Boolean, list : ArrayList[Ent
 		}
 		
 		def getEntityList() : ArrayList[Entity] = {
-			return this.entityList.asInstanceOf[ArrayList[Entity]];
+			return new ArrayList[Entity](this.entityList);
 		}
 		
 		def getEntityListAsBuffer() : ArrayBuffer[Entity] = {

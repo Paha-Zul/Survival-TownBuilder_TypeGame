@@ -35,7 +35,7 @@ class GameScreenScala(val game : SpaceGame) extends Screen{
 	
 	camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	
-	GridScala.initGrid(10,10,100,100);
+	GridScala.initGrid(10,10,10,100);
 	
 	ListHolder.initListHolder();
 	
@@ -68,6 +68,8 @@ class GameScreenScala(val game : SpaceGame) extends Screen{
 				}
 			}
 		}
+		
+		batch.end();
 	}
 	
 	def loadResources() = {
@@ -111,7 +113,9 @@ class GameScreenScala(val game : SpaceGame) extends Screen{
 		val residence : ResidenceScala = new ResidenceScala(house, "House", Constants.BUILDING_RESIDENCE, false, 1); //Init the new residence component
 		house.addComponent(residence); //Add the residence component to the entity.
 		townScript.addBuilding(residence); //Add the residence to the list of buildings in the town.
-		house.addComponent(new GridEntity(house, Constants.GRID_STATIC)); //Add a grid component.
+		
+		val comp = new GridEntity(house, "GridEntity", 0, false, Constants.GRID_STATIC);
+		//house.addComponent(comp);
 	}
 	
 	def loadCitizens() = {
