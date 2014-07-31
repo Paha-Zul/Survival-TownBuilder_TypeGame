@@ -8,6 +8,9 @@ import com.mygdx.game.component.buildings.Building
 import com.mygdx.game.component.character.AICharacterCompScala
 import scala.collection.mutable.HashMap
 import java.util.ArrayList
+import collection.JavaConversions._
+import com.mygdx.game.component.buildings.ResidenceScala
+import com.mygdx.game.utility.Constants
 
 class TownScala(owner : Entity, name : String, compType : Int, active : Boolean) 
 	extends Component(owner, name, compType, active){
@@ -82,6 +85,8 @@ class TownScala(owner : Entity, name : String, compType : Int, active : Boolean)
 	def addToPopulation(citizen : AICharacterCompScala) : Boolean = {
 		if(this.citizenList.size < this.maxPopulation){
 			citizen.assignTownOwner(this);
+			val criteria = (building : Building) => !(building.asInstanceOf[ResidenceScala]).isFull();
+			citizen.setHome(this.getBuildingByCriteria(Constants.BUILDING_RESIDENCE, criteria).asInstanceOf[ResidenceScala]);
 			this.citizenList += citizen;
 			return true;
 		}
@@ -120,7 +125,7 @@ class TownScala(owner : Entity, name : String, compType : Int, active : Boolean)
 	def getBuildingList(buildingType : Int):ArrayList[Building] = {
 		//If the key doesn't exist, return an empty list.
 		if(!this.buildingMap.contains(buildingType)) return new ArrayList[Building](0);
-		return this.buildingMap.get(buildingType).asInstanceOf[ArrayList[Building]]; //Otherwise, return the list found.
+		return new ArrayList[Building](this.buildingMap.get(buildingType).get); //Otherwise, return the list found.
 	}
 	
 	/**
@@ -131,7 +136,7 @@ class TownScala(owner : Entity, name : String, compType : Int, active : Boolean)
 	private def getBuildingListAsBuffer(buildingType : Int):ArrayBuffer[Building] = {
 		//If the key doesn't exist, return an empty list.
 		if(!this.buildingMap.contains(buildingType)) return new ArrayBuffer[Building](0);
-		return this.buildingMap.get(buildingType).asInstanceOf[ArrayBuffer[Building]]; //Otherwise, return the list found.
+		return this.buildingMap.get(buildingType).get; //Otherwise, return the list found.
 	}
 	
 	

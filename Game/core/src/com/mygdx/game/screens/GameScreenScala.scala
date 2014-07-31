@@ -115,7 +115,7 @@ class GameScreenScala(val game : SpaceGame) extends Screen{
 		townScript.addBuilding(residence); //Add the residence to the list of buildings in the town.
 		
 		val comp = new GridEntity(house, "GridEntity", 0, false, Constants.GRID_STATIC);
-		//house.addComponent(comp);
+		house.addComponent(comp).asInstanceOf[GridEntity]; //If the "asInstanceOf" is not there, it will try to cast it to 'Nothing' and will crash
 	}
 	
 	def loadCitizens() = {

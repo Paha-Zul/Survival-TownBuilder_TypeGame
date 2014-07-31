@@ -26,7 +26,7 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 		this(owner, "GenericEntity", 0, true);
 	}
 	
-	var jobController : AIJobController = new AIJobController(owner, name, 0, active);
+	var jobController : AIJobController = this.getEntityOwner().getComponent(classOf[AIJobController]);
 	var town : TownScala = _;
 	var inventory : InventoryScala[Item] = new InventoryScala[Item](owner, "InventoryScala", 0, false, 0, 99999, true, true, true);
 	val callback  = (AI : AICharacterCompScala) => AI.sleeping = false;
@@ -36,7 +36,7 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 	var needs : CharacterNeeds = owner.addComponent(new CharacterNeeds(owner, "CharNeeds", 0, false));
 
 	// Timers
-	var jobDelay : Timer = new Timer(5);
+	var jobDelay : Timer = new Timer(0);
 	var eatTimer : Timer = new Timer(5);
 	var sleepTimer : Timer = new Timer(1);
 
@@ -46,16 +46,9 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 		this.sleepTimer.update(delta);
 
 		//If the sleeping need is above 80, assign a sleep job.
-		if(this.needs.currFatigue >= 80 && !this.sleeping){
-			//If my home is null, try to find a home...
-			if(home == null){
-				val criteria = (building : Building) => !(building.asInstanceOf[ResidenceScala]).isFull();
-				this.home = this.town.getBuildingByCriteria(Constants.BUILDING_RESIDENCE, criteria).asInstanceOf[ResidenceScala];
-			//Otherwise, sleep in my home.
-			}else{
-				this.jobController.addJobGroup(new SleepScala(jobController, home, needs, 10, this.callback));
-				this.sleeping = true;
-			}
+		if(this.needs.currFatigue >= 80 && this.home != null && !this.sleeping){
+			this.jobController.addJobGroup(new SleepScala(jobController, this.home, needs, 10, this.callback));
+			this.sleeping = true;
 		}
 		
 		//If we are already sleeping, do nothing
@@ -73,7 +66,6 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 			eat();
 			this.eatTimer.restart();
 		}
-
 		// If there are no jobs and the timer is done, find a new job.
 		if (jobController.hasNoJobs() && this.jobDelay.done()) {
 			if (this.jobDelay.done()) {
@@ -91,7 +83,6 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 	def eat() : Unit = {
 		val tag : String= "food";
 		val getItemWithTag = (item : InventoryItemScala[Item]) => item.item.hasTag(tag);
-		var itemToGet : InventoryItemScala[Item] = null;
 
 		//Attempt to consume a unit of food.
 		val itemToEat : InventoryItemScala[Item] = this.inventory.removeItemFromInventory(1, getItemWithTag);
@@ -110,9 +101,10 @@ class AICharacterCompScala(owner : Entity, name : String, charType : Int, active
 				
 				// Get the inventory
 				val buildingInv : InventoryScala[Item] = building.getEntityOwner().getComponent(classOf[InventoryScala[Item]]);
-
+				val itemToGet : InventoryItemScala[Item] = buildingInv.hasItemInInventory(getItemWithTag);
+				
 				// If there is an item that has the "food" tag...
-				if ((itemToGet = buildingInv.hasItemInInventory(getItemWithTag)) != null) { 
+				if ((itemToGet) != null) { 
 					//Add a jobgroup to retrieve the item.
 					val getFood : JobGroup = new RetrieveItem(this.jobController,
 							"GetFood", 0, itemToGet.item, 5, buildingInv);

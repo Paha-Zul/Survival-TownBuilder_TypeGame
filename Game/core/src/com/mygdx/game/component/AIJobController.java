@@ -2,6 +2,7 @@ package com.mygdx.game.component;
 
 import java.util.LinkedList;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.mygdx.game.entity.Entity;
 import com.mygdx.game.jobgroups.JobGroup;
 
@@ -9,11 +10,12 @@ public class AIJobController extends Component{
 	private LinkedList<JobGroup> jobGroupList;
 	private boolean hasFailed = false;
 	
+	private int id = MathUtils.random(100);
+	
 	public AIJobController(Entity owner, String name, int type, boolean active) {
 		super(owner, name, type, active);
 		
 		jobGroupList = new LinkedList<JobGroup>();
-		
 	}
 	
 	public AIJobController(Entity owner) {
@@ -40,8 +42,9 @@ public class AIJobController extends Component{
 	
 	public void addJobGroup(JobGroup group){
 		if(group.isUnique())
-			if(this.hasJobGroup(group.name))
+			if(this.hasJobGroup(group.name)){
 				return;
+			}
 		
 		this.jobGroupList.add(group);
 	}

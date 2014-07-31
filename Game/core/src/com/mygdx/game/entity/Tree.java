@@ -20,7 +20,7 @@ public class Tree extends Entity{
 		this.entityType = Constants.ENTITY_RESOURCE;
 		
 		this.addComponent(new ResourceNode(this, 100, 2, 2f, 2, ItemBank.getItem("WoodLog")));
-		this.addComponent(new GridEntity(this, "GridEntity", 0, false, Constants.GRID_STATIC));
+		this.addComponent(new GridEntity(this, "GridEntity_Tree", 0, false, Constants.GRID_STATIC));
 		
 		this.entityType = Constants.ENTITY_RESOURCE;
 	}

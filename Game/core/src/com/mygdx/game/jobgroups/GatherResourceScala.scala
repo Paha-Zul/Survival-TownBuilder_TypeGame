@@ -24,13 +24,17 @@ class GatherResourceScala(controller : AIJobController, name : String, groupType
 		this(controller, "GatherResource "+resourceName, 0, resourceName, town);
 	}
 	
-	Init();
-	
-	val neededResource = (e : Entity) => {
-		if(e.entityType != Constants.ENTITY_RESOURCE) false; //First check if the entity is a resource.
-		val res : ResourceNode = e.getComponent(classOf[ResourceNode]); //Cache the ResourceNode script.
-		(res.getResourceItem().name.equals(resourceName) && !res.isFull()); //Return if it's the right resource and has room.
+	val neededResource : Entity => Boolean = (e : Entity) => {
+		if(e.entityType != Constants.ENTITY_RESOURCE)
+			false //First check if the entity is a resource.
+		else{
+			val res : ResourceNode = e.getComponent(classOf[ResourceNode]); //Cache the ResourceNode script.
+			println();
+			(res.getResourceItem().name == resourceName && !res.isFull()); //Return if it's the right resource and has room.
+		}
 	}
+	
+	Init();
 	
 	def Init() : Unit = {
 		//Find the closest Entity that fulfills the lambda expression above.

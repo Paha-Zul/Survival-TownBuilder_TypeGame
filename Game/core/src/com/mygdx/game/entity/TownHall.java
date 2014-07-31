@@ -17,7 +17,7 @@ public class TownHall extends Entity{
 		
 		this.addComponent(new EconomicInformation(this, "EcoInfo", 0, true));
 		this.addComponent(new TownController(this, "TownController", 0, true));
-		this.addComponent(new AIJobController(this, "TownJobController", 0, true));
+		//this.addComponent(new AIJobController(this, "TownJobController", 0, true));
 		this.addComponent(new GridEntity(this, "GridEntity", 0, false, Constants.GRID_STATIC));
 		this.addComponent(new TownScala(this, "Town"));
 		this.addComponent(new Building(this, "TownHall", Constants.BUILDING_TOWNHALL, destroyed));

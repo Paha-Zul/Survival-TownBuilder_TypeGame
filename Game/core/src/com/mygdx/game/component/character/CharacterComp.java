@@ -5,7 +5,7 @@ import com.mygdx.game.component.buildings.ResidenceScala;
 import com.mygdx.game.entity.Entity;
 
 public class CharacterComp extends Component {
-	ResidenceScala home;
+	protected ResidenceScala home;
 
 	public CharacterComp(Entity owner, String name, int type, boolean active) {
 		super(owner, name, type, active);
@@ -19,6 +19,10 @@ public class CharacterComp extends Component {
 	
 	public void setHome(ResidenceScala home){
 		this.home = home;
+	}
+	
+	public ResidenceScala getHome(){
+		return this.home;
 	}
 
 }

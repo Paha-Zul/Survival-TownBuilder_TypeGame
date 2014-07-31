@@ -14521,3 +14521,22 @@ Caused by: java.lang.ClassNotFoundException: GridSquareScala
 	at java.lang.ClassLoader.loadClass(Unknown Source)
 	at java.lang.ClassLoader.loadClass(Unknown Source)
 	... 73 more
+2014-07-30 05:22:56,126  WARN [main] - ImplicitHighlightingPresenter - Timeout while waiting for `askLoadedTyped` during implicit highlighting.
+2014-07-30 05:29:09,430 ERROR [main] - org.scala-ide.sdt.core - org.scala-ide.sdt.core - org.scala-ide.sdt.core - 0 - Error during askOption
+scala.reflect.internal.MissingRequirementError: object java.util.LinkedList<com.mygdx.game.jobgroups.JobGroup> in compiler mirror not found.
+	at scala.reflect.internal.MissingRequirementError$.signal(MissingRequirementError.scala:17)
+	at scala.reflect.internal.MissingRequirementError$.notFound(MissingRequirementError.scala:18)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:53)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:45)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:45)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:45)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:45)
+	at scala.reflect.internal.Mirrors$RootsBase.getModuleOrClass(Mirrors.scala:66)
+	at scala.reflect.internal.Mirrors$RootsBase.getClassByName(Mirrors.scala:102)
+	at scala.tools.eclipse.completion.ScalaJavaCompletionProposalComputer$$anonfun$1$$anonfun$apply$1.apply(ScalaJavaCompletionProposalComputer.scala:122)
+	at scala.tools.eclipse.completion.ScalaJavaCompletionProposalComputer$$anonfun$1$$anonfun$apply$1.apply(ScalaJavaCompletionProposalComputer.scala:121)
+	at scala.tools.nsc.util.InterruptReq.execute(InterruptReq.scala:26)
+	at scala.tools.nsc.interactive.Global$$anonfun$pollForWork$1.apply$mcV$sp(Global.scala:446)
+	at scala.util.control.Breaks.breakable(Breaks.scala:38)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:420)
+	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:22)

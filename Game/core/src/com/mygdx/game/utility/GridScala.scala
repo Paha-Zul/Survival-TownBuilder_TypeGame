@@ -19,7 +19,7 @@ object GridScala {
 		h+=padding*2;
 		w+=padding*2;
 		
-		this.grid = Array.tabulate(w, h){ (x,y) => new GridSquareScala((x-padding)*squareSize,(y-padding)*squareSize, squareSize, squareSize) }
+		this.grid = Array.tabulate(w, h){ (i,j) => new GridSquareScala((i-padding)*sizeOfSquare,(j-padding)*sizeOfSquare, sizeOfSquare, sizeOfSquare) }
 		
 		this.squareSize  = sizeOfSquare;
 		this.gridPadding = padding;
@@ -133,14 +133,13 @@ def getClosestEntityByCriteria(radius : Int, position : Vector2, criteria:(Entit
 private def closestEntityFunc(criteria:(Entity) => Boolean, list : ArrayList[Entity], range : SearchRange) : Entity = {
 	var closestEntity : Entity = null;
 	var closestDist : Float = 9999999999999f;
-	println("Found one1")
-	for(ent <- list){
+	
+	for(i <- 0 until list.size()){
+		val ent : Entity = list.get(i);
 		if(criteria(ent)){
-			println("Found one2")
 			val otherPos = ent.transform.getWorldPosition(); //Cache the local ent's location
 			val distance = Math.abs(range.entPos.x - otherPos.x) + Math.abs(range.entPos.y - otherPos.y).toFloat; //get the distance
 			if(distance < closestDist){ //If the computed distance is less than the last closest
-				println("Found one3")
 				closestDist = distance; //Set the distance
 				closestEntity = ent; //Set the closest entity
 			}

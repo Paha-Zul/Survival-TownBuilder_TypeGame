@@ -1,9 +1,0 @@
-package com.mygdx.game.screens
-
-import com.badlogic.gdx.Screen
-import com.mygdx.game.SpaceGame
-
-class GameScreenScala(val game : SpaceGame) extends Screen{
-	
-	val camera = new OrthographicCamera();
-}
