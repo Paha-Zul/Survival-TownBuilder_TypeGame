@@ -31,4 +31,9 @@ public class Timer {
 		timer = 0;
 		this.timeToPass = timeToPass;
 	}
+	
+	@Override
+	public String toString(){
+		return "Time needed to complete: "+this.timeToPass+" Current time passed: "+this.timer;
+	}
 }

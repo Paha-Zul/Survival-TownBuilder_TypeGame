@@ -86,7 +86,8 @@ class TownScala(owner : Entity, name : String, compType : Int, active : Boolean)
 		if(this.citizenList.size < this.maxPopulation){
 			citizen.assignTownOwner(this);
 			val criteria = (building : Building) => !(building.asInstanceOf[ResidenceScala]).isFull();
-			citizen.setHome(this.getBuildingByCriteria(Constants.BUILDING_RESIDENCE, criteria).asInstanceOf[ResidenceScala]);
+			val home : ResidenceScala = this.getBuildingByCriteria(Constants.BUILDING_RESIDENCE, criteria).asInstanceOf[ResidenceScala];
+			if(home != null) citizen.setHome(home);
 			this.citizenList += citizen;
 			return true;
 		}

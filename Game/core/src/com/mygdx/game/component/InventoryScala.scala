@@ -20,7 +20,6 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 		//if the criteria is satisfied.
 		if(stackable){
 			var i = 0;
-			
 			for(i <- 0 until inventory.length){ //Loop over the whole list...
 				val itemInInventory : InventoryItemScala[E] = inventory(i); //Cache the InventoryItem
 				
@@ -29,14 +28,13 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 					return true;
 				}
 			}
-			
 			//If no acceptable item was found...
 			inventory :+ invItemToAdd;
 			return true;
 			
 		//If the inventory can't have stacking items...
 		}else{
-			inventory :+ invItemToAdd;
+			inventory = inventory :+ invItemToAdd;
 			return true;
 		}
 	}
@@ -178,6 +176,5 @@ class InventoryScala[E](owner : Entity, name : String, compType : Int, active : 
 }
 
 class InventoryItemScala[E](val item  : E, var quantity : Int){
-	
 	override def toString () : String = {"[Name: "+item.toString()+" Quantity: "+quantity+"]";}
 }

@@ -125,7 +125,7 @@ class GameScreenScala(val game : SpaceGame) extends Screen{
 		
 		var i=0;
 		// Create some citizens.
-		for (i <- 0 until 1) {
+		for (i <- 0 until 2) {
 			val randX : Float = MathUtils.random() * 500 + 100;
 			val randY : Float = MathUtils.random() * 500 + 100;
 

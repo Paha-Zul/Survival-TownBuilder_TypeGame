@@ -29,7 +29,6 @@ class GatherResourceScala(controller : AIJobController, name : String, groupType
 			false //First check if the entity is a resource.
 		else{
 			val res : ResourceNode = e.getComponent(classOf[ResourceNode]); //Cache the ResourceNode script.
-			println();
 			(res.getResourceItem().name == resourceName && !res.isFull()); //Return if it's the right resource and has room.
 		}
 	}

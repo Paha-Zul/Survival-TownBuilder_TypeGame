@@ -1,0 +1,26 @@
+package com.mygdx.game.component.character
+
+class CharacterCompScala extends Component{
+
+	
+	override def update(delta : Float) = {
+		
+	}
+	
+	override def setHome(ResidenceScala home){
+		this.home = home;
+		this.home.addToResidence(this);
+	}
+	
+	public ResidenceScala getHome(){
+		return this.home;
+	}
+	
+	public void setSleeping(boolean sleeping){
+		this.sleeping = sleeping;
+	}
+	
+	public boolean isSleeping(){
+		return this.sleeping;
+	}
+}
